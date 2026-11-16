@@ -29,8 +29,10 @@ const p = await ctx.newPage();
 await p.goto('http://localhost:4175/');
 
 // 1. услуга из списка подставляется
-await p.locator('.svc-go[data-service="beard"]').click();
-ok((await p.locator('#bkSum').textContent()).includes('Борода'), 'услуга из списка подставилась в панель');
+ok(await p.locator('#bar').evaluate((el) => el.classList.contains('hide')), 'на первом экране нижняя панель скрыта: кнопка «Записаться» одна');
+await p.locator('.hero [data-book]').click();
+await p.locator('.opt[data-kind="service"]', { hasText: 'Борода' }).click();
+ok((await p.locator('#bkSum').textContent()).includes('Борода'), 'услуга выбирается в панели');
 ok((await p.locator('.send.off').count()) === 3, 'без места, дня и времени отправка выключена');
 
 // 2. место → день → время
@@ -73,6 +75,11 @@ await p.locator('#booking .x').click();
 await p.evaluate(() => scrollTo(0, document.body.scrollHeight));
 await p.waitForTimeout(400);
 const gap = await p.evaluate(() => document.querySelector('.fin-tr').getBoundingClientRect().bottom <= document.querySelector('.bar').getBoundingClientRect().top);
+await p.evaluate(() => document.querySelector('.ch-seat .btn').scrollIntoView({ block: 'center' }));
+await p.waitForTimeout(500);
+ok(await p.locator('#bar').evaluate((el) => el.classList.contains('hide')), 'у кресла нижняя панель скрыта: кнопка «Записаться» одна');
+await p.evaluate(() => scrollTo(0, document.body.scrollHeight));
+await p.waitForTimeout(500);
 ok(gap, 'нижняя панель не перекрывает финал');
 await p.locator('[data-route]').click();
 ok((await p.locator('#routes a').count()) === 6, 'выбор маршрута: три локации, по две ссылки');

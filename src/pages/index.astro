@@ -14,7 +14,9 @@ const { contacts: c, person } = cfg;
 const pageUrl = new URL(B, Astro.site).href;
 const hasLoc = cfg.locations.length > 0;
 const metros = cfg.locations.map((l: any) => l.metro);
-const title = hasLoc ? `${person.nameLatin}: барбер в Москве, метро ${metros.join(', ')}` : cfg.site.title;
+const name = person.nameRu || person.nameLatin;
+const [first, ...rest] = name.split(' ');
+const title = hasLoc ? `Барбер ${name} в Москве: метро ${metros.join(', ')}` : cfg.site.title;
 const tel = `tel:${c.phoneTel}`;
 const tg = `https://t.me/${c.telegram}`;
 const wa = `https://wa.me/${c.whatsapp}`;
@@ -32,20 +34,6 @@ const ratio = (id: string) => `${media.photos[id].width} / ${media.photos[id].he
 const hero = media.photos['hero-cutout'];
 const v = media.video['fire-1'];
 
-// нумерация секций: отзывы и «где» появляются, только когда для них есть данные
-const sections = [
-  { id: 'works', tr: 'İşler', ru: 'работы' },
-  { id: 'services', tr: 'Hizmetler', ru: 'услуги' },
-  { id: 'about', tr: 'Usta', ru: 'о мастере' },
-  ...(cfg.reviews.length ? [{ id: 'reviews', tr: 'Yorumlar', ru: 'отзывы' }] : []),
-  ...(hasLoc ? [{ id: 'where', tr: 'Adresler', ru: 'где' }] : []),
-  { id: 'contacts', tr: 'İletişim', ru: 'контакты' },
-];
-const lead = (id: string) => {
-  const i = sections.findIndex((s) => s.id === id);
-  const s = sections[i];
-  return `<p class="lead"><span class="idx">${num(i + 1)}</span><span lang="tr">${s.tr}</span> · ${s.ru}</p>`;
-};
 const DAYS: [string, string][] = [['mon', 'пн'], ['tue', 'вт'], ['wed', 'ср'], ['thu', 'чт'], ['fri', 'пт'], ['sat', 'сб'], ['sun', 'вс']];
 const hoursText = (l: any) => DAYS.filter(([k]) => l.hours[k]).map(([k, ru]) => `${ru} ${l.hours[k][0]}–${l.hours[k][1]}`).join(' · ');
 const yRoute = (l: any) => `https://yandex.ru/maps/?rtext=~${l.coords[0]},${l.coords[1]}&rtt=auto`;
@@ -56,7 +44,7 @@ const jsonLd = hasLoc
   ? cfg.locations.map((l: any) => ({
       '@context': 'https://schema.org',
       '@type': 'HairSalon',
-      name: `${person.nameLatin}, ${l.name}`,
+      name: `${name}, ${l.name}`,
       url: pageUrl,
       telephone: c.phoneTel,
       image: new URL(`${B}og.jpg`, Astro.site).href,
@@ -70,7 +58,7 @@ const jsonLd = hasLoc
       })),
       sameAs,
     }))
-  : [{ '@context': 'https://schema.org', '@type': 'Person', name: person.nameLatin, jobTitle: person.jobTitle, telephone: c.phoneTel, url: pageUrl, address: { '@type': 'PostalAddress', addressLocality: 'Москва', addressCountry: 'RU' }, sameAs }];
+  : [{ '@context': 'https://schema.org', '@type': 'Person', name, alternateName: person.nameLatin, jobTitle: person.jobTitle, telephone: c.phoneTel, url: pageUrl, address: { '@type': 'PostalAddress', addressLocality: 'Москва', addressCountry: 'RU' }, sameAs }];
 
 // в браузер уходит только то, что нужно панели записи и карте
 const clientCfg = {
@@ -80,7 +68,8 @@ const clientCfg = {
   locations: cfg.locations,
   mapsKey: cfg.yandexMapsApiKey,
 };
-const tape = `<span lang="tr">Türk berberi</span> · турецкий барбер · Москва · <span lang="tr">Sıhhatler olsun</span> · `;
+const tape = `Барбер ${name} · Москва · стрижки · борода · бритьё опасной бритвой · `;
+const copyIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.500"/><path d="M5 15V6.500A2.500 2.500 0 0 1 7.500 4H15"/></svg>';
 ---
 <!doctype html>
 <html lang="ru">
@@ -123,8 +112,8 @@ const tape = `<span lang="tr">Türk berberi</span> · турецкий барб�
 
     <div class="intro" id="intro" aria-hidden="true">
       <svg class="mark" viewBox="0 0 64 24"><use href="#mark" /></svg>
-      <p lang="tr">Hoş geldin</p>
-      <small>добро пожаловать · нажмите, чтобы пропустить</small>
+      <p>{name}</p>
+      <span>нажмите, чтобы пропустить</span>
     </div>
 
     <main id="main">
@@ -137,11 +126,9 @@ const tape = `<span lang="tr">Türk berberi</span> · турецкий барб�
               <source src={`${B}media/video/fire-1.mp4`} type="video/mp4" />
             </video>
             </div>
-            <p class="mast"><svg class="mark" viewBox="0 0 64 24" aria-hidden="true"><use href="#mark" /></svg><span>Москва</span></p>
+            <p class="mast"><svg class="mark" viewBox="0 0 64 24" aria-hidden="true"><use href="#mark" /></svg></p>
             <div class="hero-txt">
-              <p class="kicker">{cfg.hero.kicker}</p>
-              <h1 class="name" lang="tr"><span>Tamer</span> <span>Örcü</span></h1>
-              <p class="tagline"><Fragment set:html={cfg.hero.tagline + draft(cfg.hero.draft)} /></p>
+              <h1 class="name"><small>{cfg.hero.kicker}</small><span>{first}</span> <span>{rest.join(' ')}</span></h1>
               <div class="cta">
                 <button class="btn" type="button" data-book>Записаться</button>
                 <a class="call" href={tel}>Позвонить</a>
@@ -158,52 +145,28 @@ const tape = `<span lang="tr">Türk berberi</span> · турецкий барб�
                 <div class="stat rv"><dd>{s.value}</dd><dt>{s.label}</dt></div>
               ))}
             </dl>
-            <p class="locs rv">
-              {hasLoc ? `3 локации: ${metros.join(', ')}` : <Fragment>3 локации в Москве: <span class="todo">адреса появятся [TODO]</span></Fragment>}
-            </p>
+            {hasLoc && <p class="locs rv">Метро: {metros.join(', ')}</p>}
           </div>
-          <div class="cover-port" set:html={pic('hero-cutout', '(min-width: 900px) 40vw, 74vw', 'Тамер в чёрной рубашке и круглых тёмных очках, вполоборота')} />
+          <div class="cover-port" set:html={pic('hero-cutout', '(min-width: 900px) 40vw, 66vw', 'Тамер в чёрной рубашке и круглых тёмных очках, вполоборота')} />
         </section>
       </div>
 
       <div class="tape" aria-hidden="true"><div class="tape-t"><span set:html={tape.repeat(6)} /><span set:html={tape.repeat(6)} /></div></div>
 
-      <div class="pin" data-scene>
-        <section class="manifest" id="manifest">
-          <div class="man-photo" set:html={pic('p13', '(min-width: 900px) 46vh, 100vw', 'Опасная бритва снимает пену со щеки, крупный план')} />
-          <i class="man-shade"></i>
-          <div class="man-txt">
-            <p class="lead">манифест</p>
-            {cfg.manifest.line ? (
-              <Fragment>
-                <p class="shout" lang="tr">{cfg.manifest.line}</p>
-                <p class="shout-tr">{cfg.manifest.translation}</p>
-              </Fragment>
-            ) : (
-              <Fragment>
-                <p class="shout">Строка Тамера <span class="todo">[TODO]</span></p>
-                <p class="shout-tr">ниже мелко встанет русский перевод · фраза из его Telegram, ждёт согласия</p>
-              </Fragment>
-            )}
-          </div>
-        </section>
-      </div>
-
       <section class="sec works" id="works">
         <header class="sh">
-          <Fragment set:html={lead('works')} />
-          <h2 class="rv">Формы, которые я собрал</h2>
-          <div class="chips" role="group" aria-label="Тип работ">
-            <button class="chip" type="button" data-filter="all" aria-pressed="true">Все</button>
-            {cfg.galleryTypes.map((t: any) => <button class="chip" type="button" data-filter={t.id} aria-pressed="false">{t.label}</button>)}
+          <h2 class="rv">Мои работы</h2>
+          <div class="switch" role="group" aria-label="Чьи работы показать">
+            {cfg.galleryTypes.map((t: any, i: number) => <button class="chip" type="button" data-filter={t.id} aria-pressed={i === 0 ? 'true' : 'false'}>{t.label}</button>)}
           </div>
         </header>
         <div class="rail-pin" data-rail>
           <div class="rail-view">
             <ul class="rail" id="rail">
               {cfg.gallery.map((g: any, i: number) => (
-                <li class="shot" data-type={g.type} style={`aspect-ratio:${ratio(g.id)}`}>
-                  <button type="button" data-open={i} aria-label={`Открыть фото: ${g.alt}`} set:html={pic(g.id, '(min-width: 900px) 42vh, 70vw', g.alt)} />
+                <li class="shot" data-type={g.type} hidden={g.type !== cfg.galleryTypes[0].id} style={`aspect-ratio:${ratio(g.id)}`}>
+                  <button type="button" data-open={i} aria-label={`Открыть фото: ${g.alt}`} set:html={pic(g.id, '(min-width: 900px) 46vh, 72vw', g.alt)} />
+                  {g.caption && <p class="shot-cap">{g.caption}</p>}
                 </li>
               ))}
             </ul>
@@ -211,50 +174,9 @@ const tape = `<span lang="tr">Türk berberi</span> · турецкий барб�
         </div>
       </section>
 
-      <section class="sec services paper" id="services">
-        <header class="sh">
-          <Fragment set:html={lead('services')} />
-          <h2 class="rv">С чем вы выйдете из кресла</h2>
-        </header>
-        <ol class="svcs">
-          {cfg.services.map((s: any, i: number) => (
-            <li class="svc rv">
-              <span class="svc-n">{num(i + 1)}</span>
-              <div class="svc-b"><h3>{s.title}</h3><p><Fragment set:html={s.line + draft(s.draft)} /></p></div>
-              <button class="svc-go" type="button" data-book data-service={s.id} aria-label={`Записаться: ${s.title}`}>Записаться</button>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section class="sec about" id="about">
-        <header class="sh">
-          <Fragment set:html={lead('about')} />
-          <h2 class="rv">Путь из Турции в Москву</h2>
-        </header>
-        <div class="about-grid">
-          <ol class="path">
-            {cfg.about.map((a: any) => (
-              <li class="step rv">
-                <svg class="mark" viewBox="0 0 64 24" aria-hidden="true"><use href="#mark" /></svg>
-                <p class="step-big"><Fragment set:html={a.big + draft(a.draft)} /></p>
-                <p class="step-small">{a.small}</p>
-              </li>
-            ))}
-            <li class="step rv"><svg class="mark" viewBox="0 0 64 24" aria-hidden="true"><use href="#mark" /></svg><p class="step-big">Сейчас принимаю в Москве</p><p class="step-small">{cfg.aboutNote}</p></li>
-          </ol>
-          {cfg.guest && (
-            <figure class="guest rv">
-              <div style={`aspect-ratio:${ratio(cfg.guest.photo)}`} set:html={pic(cfg.guest.photo, '(min-width: 900px) 30vw, 88vw', cfg.guest.alt)} />
-              <figcaption><Fragment set:html={cfg.guest.caption + draft(cfg.guest.draft)} /></figcaption>
-            </figure>
-          )}
-        </div>
-      </section>
-
       {cfg.reviews.length > 0 && (
         <section class="sec reviews paper" id="reviews">
-          <header class="sh"><Fragment set:html={lead('reviews')} /><h2 class="rv">Что говорят после кресла</h2></header>
+          <header class="sh"><h2 class="rv">Что говорят после кресла</h2></header>
           <ul class="revs">
             {cfg.reviews.map((r: any) => (
               <li class="rev rv"><blockquote>{r.text}</blockquote><p><b>{r.name}</b> · {r.source}</p></li>
@@ -265,7 +187,7 @@ const tape = `<span lang="tr">Türk berberi</span> · турецкий барб�
 
       {hasLoc && (
         <section class="sec where" id="where">
-          <header class="sh"><Fragment set:html={lead('where')} /><h2 class="rv">Выберите, куда удобнее</h2></header>
+          <header class="sh"><h2 class="rv">Выберите, куда удобнее</h2></header>
           <div class="where-grid">
             <ul class="locs-list">
               {cfg.locations.map((l: any) => (
@@ -289,16 +211,24 @@ const tape = `<span lang="tr">Türk berberi</span> · турецкий барб�
         </section>
       )}
 
-      <section class="sec contacts paper" id="contacts">
-        <header class="sh"><Fragment set:html={lead('contacts')} /><h2 class="rv">Напишите, и я подтвержу время</h2></header>
-        <ul class="cts">
-          <li class="ct rv"><span>Телефон</span><a href={tel}>{c.phoneDisplay}</a><button type="button" data-copy={c.phoneTel}>скопировать</button></li>
-          <li class="ct rv"><span>Telegram</span><a href={tg} target="_blank" rel="noopener">@{c.telegram}</a><button type="button" data-copy={`@${c.telegram}`}>скопировать</button></li>
-          <li class="ct rv"><span>WhatsApp</span><a href={wa} target="_blank" rel="noopener">{c.phoneDisplay}</a><button type="button" data-copy={c.phoneTel}>скопировать</button></li>
-          {c.maxUrl && <li class="ct rv"><span>MAX</span><a href={c.maxUrl} target="_blank" rel="noopener">профиль в MAX</a><button type="button" data-copy={c.maxUrl}>скопировать</button></li>}
-          <li class="ct rv"><span>Instagram</span><a href={ig} target="_blank" rel="noopener">{c.instagram}</a><button type="button" data-copy={c.instagram}>скопировать</button></li>
-        </ul>
-        <div class="cta wide"><button class="btn" type="button" data-book>Записаться</button></div>
+      <section class="sec contacts" id="contacts">
+        <header class="sh"><h2 class="rv">Садитесь в кресло</h2></header>
+        <div class="chair">
+          <div class="ch-head rv"></div>
+          <div class="ch-neck rv" aria-hidden="true"><i></i><i></i></div>
+          <ul class="ch-back rv">
+            <li><span>Телефон</span><a href={tel}>{c.phoneDisplay}</a><button type="button" data-copy={c.phoneTel} aria-label="Скопировать телефон" set:html={copyIcon} /></li>
+            <li><span>Telegram</span><a href={tg} target="_blank" rel="noopener">@{c.telegram}</a><button type="button" data-copy={`@${c.telegram}`} aria-label="Скопировать ник в Telegram" set:html={copyIcon} /></li>
+            <li><span>WhatsApp</span><a href={wa} target="_blank" rel="noopener">{c.phoneDisplay}</a><button type="button" data-copy={c.phoneTel} aria-label="Скопировать номер WhatsApp" set:html={copyIcon} /></li>
+            {c.maxUrl && <li><span>MAX</span><a href={c.maxUrl} target="_blank" rel="noopener">профиль</a><button type="button" data-copy={c.maxUrl} aria-label="Скопировать ссылку на MAX" set:html={copyIcon} /></li>}
+            <li><span>Instagram</span><a href={ig} target="_blank" rel="noopener">{c.instagram}</a><button type="button" data-copy={c.instagram} aria-label="Скопировать ник в Instagram" set:html={copyIcon} /></li>
+          </ul>
+          <div class="ch-seat rv"><i class="arm l"></i><i class="arm r"></i><button class="btn" type="button" data-book>Записаться</button></div>
+          <div class="ch-post rv" aria-hidden="true"></div>
+          <div class="ch-rest rv" aria-hidden="true"></div>
+          <div class="ch-post short rv" aria-hidden="true"></div>
+          <div class="ch-base rv" aria-hidden="true"></div>
+        </div>
       </section>
 
       <section class="finale" id="finale">
@@ -308,7 +238,7 @@ const tape = `<span lang="tr">Türk berberi</span> · турецкий барб�
       </section>
     </main>
 
-    <nav class="bar" aria-label="Быстрые действия">
+    <nav class="bar hide" id="bar" aria-label="Быстрые действия">
       <button type="button" data-book class="bar-main">Записаться</button>
       <a href={tel}>Позвонить</a>
       {hasLoc && <button type="button" data-route>Маршрут</button>}
@@ -342,7 +272,7 @@ const tape = `<span lang="tr">Türk berberi</span> · турецкий барб�
     <dialog class="lb" id="lb" aria-label="Просмотр фото">
       <form method="dialog"><button class="x" aria-label="Закрыть">×</button></form>
       <ul class="lb-track" id="lbTrack">
-        {cfg.gallery.map((g: any) => <li data-type={g.type} set:html={pic(g.id, '100vw', g.alt)} />)}
+        {cfg.gallery.map((g: any) => <li data-type={g.type} hidden={g.type !== cfg.galleryTypes[0].id} set:html={pic(g.id, '100vw', g.alt)} />)}
       </ul>
       <p class="lb-n" id="lbN" aria-live="polite"></p>
     </dialog>

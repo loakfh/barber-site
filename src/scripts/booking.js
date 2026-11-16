@@ -128,7 +128,7 @@ export function initBooking(cfg) {
         html += `<fieldset><legend>3. Удобное время</legend><div class="opts grid">${state.day.times.map((t) => opt('time', t, t, state.time === t)).join('')}</div></fieldset>`;
       }
     }
-    html += `<fieldset><legend>${hasLoc ? 'Услуга, если уже выбрали' : 'Услуга, если уже знаете'}</legend><div class="opts row">${cfg.services
+    if (cfg.services.length) html += `<fieldset><legend>${hasLoc ? 'Услуга, если уже выбрали' : 'Услуга, если уже знаете'}</legend><div class="opts row">${cfg.services
       .map((s) => opt('service', s.id, esc(s.title), state.service?.id === s.id))
       .join('')}</div></fieldset>`;
     body.innerHTML = html;

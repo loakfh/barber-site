@@ -37,7 +37,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .intro-on .intro{display:flex;position:fixed;inset:0;z-index:100;background:var(--night);flex-direction:column;align-items:center;justify-content:center;gap:14px;cursor:pointer;transition:opacity .4s ease}
 .intro .mark{width:120px;height:45px;color:var(--flame);animation:pop .9s cubic-bezier(.2,.8,.2,1) both}
 .intro p{font:800 44px/1 var(--serif);animation:rise .7s .15s cubic-bezier(.2,.8,.2,1) both}
-.intro small{opacity:.55;font-size:12px;animation:rise .7s .3s cubic-bezier(.2,.8,.2,1) both}
+.intro span{opacity:.6;font-size:14px;animation:rise .7s .3s cubic-bezier(.2,.8,.2,1) both}
 .intro.out{opacity:0;pointer-events:none}
 .intro-on body{overflow:hidden}
 @keyframes pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
@@ -46,25 +46,28 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 /* ---------- сцена 1: первый экран уходит вглубь, бумажный разворот наезжает сверху ---------- */
 .stack{position:relative}
 .hero{position:sticky;top:0;height:100svh;overflow:hidden;z-index:0}
-.hero-in{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:20px var(--pad) calc(26px + var(--bar));transform:scale(calc(1 - var(--p,0)*.12));opacity:calc(1 - var(--p,0)*.75);transform-origin:50% 40%;will-change:transform,opacity}
+.hero-in{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:20px var(--pad) calc(34px + env(safe-area-inset-bottom));transform:scale(calc(1 - var(--p,0)*.12));opacity:calc(1 - var(--p,0)*.75);transform-origin:50% 40%;will-change:transform,opacity}
 .hero-win{position:absolute;inset:0;z-index:-1}
 .hero-v{width:100%;height:100%;object-fit:cover}
 .hero-win::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,#0a0b0df5 0%,#0a0b0dc4 36%,#0a0b0d40 64%,#0a0b0d73 100%)}
 .mast{display:flex;justify-content:space-between;align-items:center;font-size:12px;letter-spacing:.2em;text-transform:uppercase}
 .kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--flame)}
-.name{font:800 clamp(76px,24vw,150px)/.9 var(--serif);letter-spacing:-.035em;margin:10px 0 16px}
+.name{font:800 clamp(64px,21.500vw,130px)/.92 var(--serif);letter-spacing:-.03em;margin:0 0 26px}
+.name small{display:block;font:italic 400 clamp(28px,8vw,40px)/1.1 var(--serif);letter-spacing:0;color:var(--flame);margin-bottom:10px}
 .name span{display:block}
 .tagline{font-weight:300;font-size:17px;line-height:1.4;max-width:30ch}
-.hero .cta{margin-top:22px}
+.hero .cta{margin-top:0}
+.hero .btn{min-height:60px;font-size:19px}
+.hero .call{font-size:18px}
 
 .cover{position:relative;z-index:1;background:var(--paper);color:var(--ink);min-height:100svh;padding:44px var(--pad) 0;overflow:hidden;display:flex;flex-direction:column}
-.cover-line{font:italic 400 clamp(30px,8.6vw,40px)/1.12 var(--serif);letter-spacing:-.01em}
+.cover-line{font:italic 400 clamp(34px,9.800vw,46px)/1.1 var(--serif);letter-spacing:-.01em}
 .cover-txt{position:relative;z-index:2;display:flex;flex-direction:column;flex:1}
-.stats{display:flex;flex-direction:column;gap:12px;width:42%;margin-top:30px}
+.stats{display:flex;flex-direction:column;gap:14px;width:42%;margin-top:30px;padding-bottom:calc(40px + var(--bar))}
 .stat{border-top:1px solid var(--ink);padding-top:8px}
 .stat dd{font:800 40px/1 var(--serif)}
-.stat dt{font-size:12px;line-height:1.25;margin-top:5px;max-width:13ch}
-.cover .locs{margin-top:22px;padding-bottom:calc(28px + var(--bar));font-size:14px;width:40%}
+.stat dt{font-size:15px;line-height:1.25;margin-top:5px;max-width:13ch}
+.cover .locs{margin-top:-20px;padding-bottom:calc(28px + var(--bar));font-size:15px;width:40%}
 /* портрет прижат к правой стенке и к низу: срез спины уходит за край экрана */
 .cover-port{position:absolute;right:0;bottom:0;width:66vw;max-width:520px;z-index:1;transform:translate3d(calc((1 - min(1,var(--p,1)*1.5))*22%),0,0);will-change:transform}
 
@@ -96,13 +99,14 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .js .rv.in{opacity:1;transform:none}
 
 /* работы: на телефоне лента листается пальцем, на десктопе её везёт прокрутка страницы */
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
-.chip{min-height:44px;padding:0 18px;border:1px solid #ffffff59;border-radius:99px;font-size:15px;transition:transform .14s}
-.chip[aria-pressed=true]{background:var(--bone);color:var(--night);border-color:var(--bone)}
+.switch{display:inline-flex;gap:6px;margin-top:24px;padding:5px;border:1px solid #ffffff59;border-radius:99px}
+.chip{min-height:50px;padding:0 26px;border-radius:99px;font-size:18px;font-weight:600;transition:transform .14s}
+.chip[aria-pressed=true]{background:var(--bone);color:var(--night)}
 .rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 calc(var(--pad)*-1);padding:0 var(--pad);scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .rail::-webkit-scrollbar{display:none}
 /* кадр держит пропорции исходника: фото не обрезается */
-.shot{flex:none;height:58svh;max-height:560px;scroll-snap-align:center;background:#16181c}
+.shot{flex:none;height:58svh;max-height:560px;scroll-snap-align:center;background:#16181c;position:relative}
+.shot-cap{position:absolute;left:0;right:0;bottom:0;padding:34px 16px 14px;font:800 20px/1.15 var(--serif);background:linear-gradient(to top,#0a0b0de6,#0a0b0d00);pointer-events:none}
 .shot button{display:block;width:100%;height:100%;cursor:zoom-in}
 .shot picture,.shot img{width:100%;height:100%;object-fit:cover}
 
@@ -140,21 +144,39 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .map{height:360px;border-radius:18px;overflow:hidden;background:#16181c;display:grid;place-items:center}
 .map-ph{opacity:.5;font-size:13px;padding:20px;text-align:center}
 
-/* контакты */
-.ct{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;border-top:1px solid var(--ink);padding:16px 0}
-.ct span{grid-column:1/3;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.6}
-.ct a{font:800 24px/1.2 var(--serif);text-decoration:none;min-height:44px;display:inline-flex;align-items:center;overflow-wrap:anywhere}
-.ct button{min-height:44px;padding:0 14px;border:1px solid var(--ink);border-radius:99px;font-size:13px}
-.cta.wide{margin-top:28px}
+/* контакты: силуэт барберского кресла, собранный из блоков. Спинка держит контакты, сиденье — кнопку записи */
+.contacts{overflow:hidden}
+.chair{--c:var(--paper);--steel:linear-gradient(90deg,#6f6b65,#cfcac2 45%,#6f6b65);max-width:440px;margin:6px auto 0;display:flex;flex-direction:column;align-items:center;color:var(--ink)}
+.ch-head{width:46%;height:72px;background:var(--c);border-radius:30px 30px 16px 16px}
+.ch-neck{display:flex;gap:46px;height:20px}
+.ch-neck i{width:8px;background:var(--steel)}
+.ch-back{width:88%;background:var(--c);border-radius:46px 46px 16px 16px;padding:20px 20px 12px 24px}
+.ch-back li{display:grid;grid-template-columns:1fr 46px;align-items:center;padding:10px 0;border-top:1px solid #15171b26}
+.ch-back li:first-child{border-top:0}
+.ch-back span{grid-column:1/3;font-size:15px;opacity:.7}
+.ch-back a{font:800 22px/1.2 var(--serif);text-decoration:none;min-height:42px;display:flex;align-items:center;overflow-wrap:anywhere}
+.ch-back button{width:46px;height:46px;display:grid;place-items:center;border-radius:50%;transition:transform .14s}
+.ch-back button:active{transform:scale(.9)}
+.ch-back svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.800;stroke-linecap:round}
+.ch-seat{position:relative;width:100%;background:var(--c);border-radius:18px 18px 46px 46px;padding:22px 50px 28px;margin-top:8px;display:flex}
+.ch-seat .btn{flex:1;min-height:58px;font-size:19px}
+.arm{position:absolute;top:-70px;width:30px;height:104px;border-radius:15px;background:#d3cdc2}
+.arm.l{left:0}.arm.r{right:0}
+.ch-post{width:42px;height:50px;background:var(--steel)}
+.ch-post.short{height:24px}
+.ch-rest{width:56%;height:16px;border-radius:8px;background:var(--c)}
+.ch-base{width:74%;height:26px;border-radius:50%;background:var(--c)}
+.js .chair .rv:nth-child(2){transition-delay:.05s}.js .chair .rv:nth-child(3){transition-delay:.1s}.js .chair .rv:nth-child(4){transition-delay:.18s}.js .chair .rv:nth-child(5){transition-delay:.26s}.js .chair .rv:nth-child(6){transition-delay:.3s}.js .chair .rv:nth-child(7){transition-delay:.34s}.js .chair .rv:nth-child(8){transition-delay:.4s}
 
 /* финал */
 .finale{min-height:86svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px var(--pad)}
 .finale .mark{width:72px;height:27px;color:var(--flame);margin-bottom:26px}
 .fin{font:800 clamp(46px,13vw,150px)/1 var(--serif);letter-spacing:-.02em}
-.fin-tr{font-size:14px;opacity:.6;margin-top:16px}
+.fin-tr{font-size:16px;opacity:.7;margin-top:18px}
 
 /* ---------- нижняя панель на телефоне ---------- */
-.bar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;gap:8px;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:var(--night);border-top:1px solid #ffffff26}
+.bar.hide{transform:translate3d(0,115%,0)}
+.bar{transition:transform .32s cubic-bezier(.2,.8,.2,1);position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;gap:8px;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:var(--night);border-top:1px solid #ffffff26}
 .bar>*{flex:1;min-height:48px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #ffffff59;border-radius:99px;font-weight:600;font-size:15px;text-decoration:none;transition:transform .14s}
 .bar .bar-main{flex:1.4;background:var(--flame);color:#140a02;border-color:var(--flame)}
 
@@ -215,18 +237,21 @@ dialog::backdrop{background:#000000b3}
   .bar{display:none}
   .hero-in{padding:34px var(--pad) 48px}
   /* вертикальное видео остаётся вертикальным: окно 9:16 во всю высоту, края уходят в темноту */
-  .hero-win{inset:0 9vw 0 auto;aspect-ratio:9/16;height:100%}
-  .hero-win::after{background:linear-gradient(90deg,var(--night) 0%,#0a0b0d00 26%,#0a0b0d00 74%,var(--night) 100%),linear-gradient(to top,#0a0b0de6 0%,#0a0b0d00 40%)}
-  .name{font-size:clamp(150px,15.5vw,250px);margin:14px 0 22px}
+  /* вертикальное видео остаётся вертикальным окном у правого края; затемняется только слева, где на него заходит имя */
+  .hero-win{inset:0 0 0 auto;width:max(56.25vh,42vw);height:100%}
+  .hero-win::after{background:linear-gradient(90deg,var(--night) 0%,#0a0b0d00 34%),linear-gradient(to top,#0a0b0d99 0%,#0a0b0d00 34%)}
+  .name{font-size:clamp(130px,13.200vw,220px);margin:0 0 34px}
+  .name small{font-size:clamp(40px,3.600vw,60px);margin-bottom:6px}
   .name span{display:inline}
   .tagline{font-size:21px}
   .cta .btn{flex:none;min-width:240px}
   .cover{padding-top:90px;min-height:100vh}
-  .cover-line{font-size:clamp(48px,4.6vw,76px);max-width:19ch}
+  .cover-line{font-size:clamp(56px,5.400vw,92px);max-width:17ch}
   .stats{flex-direction:row;gap:28px;width:auto;max-width:560px;margin-top:56px}
   .stat{flex:1}
   .stat dd{font-size:64px}
-  .stat dt{font-size:14px}
+  .stat dt{font-size:17px}
+  .stats{padding-bottom:60px}
   .cover .locs{width:auto;font-size:15px;padding-bottom:44px;margin-top:auto}
   .cover-port{width:auto;height:94%;max-width:none;aspect-ratio:874/1799}
   .cover-port picture,.cover-port img{height:100%;width:auto}
@@ -241,7 +266,9 @@ dialog::backdrop{background:#000000b3}
   .rail-view{position:sticky;top:0;height:100vh;display:flex;align-items:center;overflow:hidden;margin:0 calc(var(--pad)*-1);padding:0 var(--pad)}
   .rail{overflow:visible;margin:0;padding:0;gap:20px;will-change:transform}
   .shot{height:68vh;max-height:none}
-  .services,.contacts{display:grid;grid-template-columns:minmax(320px,36%) 1fr;column-gap:64px;align-items:start}
+  .contacts{display:grid;grid-template-columns:1fr minmax(400px,480px);column-gap:64px;align-items:center}
+  .contacts .sh{margin:0}
+  .chair{margin:0}
   .svc{grid-template-columns:44px 1fr auto;gap:6px 26px;align-items:center;padding:26px 0}
   .svc h3{font-size:34px}
   .svc-b p{font-size:19px}
@@ -267,5 +294,5 @@ dialog::backdrop{background:#000000b3}
   .pin{height:auto}
   .tape-t,.intro *,.sheet[open]{animation:none!important}
   .js .rv{opacity:1;transform:none;transition:none}
-  .btn,.svc-go,.chip,.opt,.send,.toast{transition:none}
+  .btn,.svc-go,.chip,.opt,.send,.toast,.bar{transition:none}
 }

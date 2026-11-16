@@ -123,7 +123,7 @@ if (!calm) {
   const track = $('lbTrack');
   const counter = $('lbN');
   if (!railList || !lb) return;
-  let filter = 'all';
+  let filter = document.querySelector('.chip[aria-pressed=true]')?.dataset.filter;
   const shots = [...railList.children];
   const slides = [...track.children];
   const visible = () => slides.filter((s) => !s.hidden);
@@ -133,7 +133,7 @@ if (!calm) {
       filter = chip.dataset.filter;
       document.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
       shots.forEach((s, i) => {
-        const hide = filter !== 'all' && s.dataset.type !== filter;
+        const hide = s.dataset.type !== filter;
         s.hidden = hide;
         slides[i].hidden = hide;
       });
@@ -164,6 +164,31 @@ if (!calm) {
   lb.addEventListener('click', (e) => {
     if (e.target === lb || e.target === track || e.target.tagName === 'LI') lb.close();
   });
+})();
+
+/* ---------- нижняя панель появляется после первого экрана: две кнопки «Записаться» рядом не стоят ---------- */
+(function bar() {
+  const bar = $('bar');
+  if (!bar) return;
+  let q = false;
+  let seat = false; // кнопка записи на сиденье кресла в кадре
+  const sync = () => {
+    q = false;
+    bar.classList.toggle('hide', seat || scrollY < innerHeight * 0.6);
+  };
+  const seatBtn = document.querySelector('.ch-seat .btn');
+  if (seatBtn && 'IntersectionObserver' in window) {
+    new IntersectionObserver((es) => {
+      seat = es[0].isIntersecting;
+      sync();
+    }).observe(seatBtn);
+  }
+  addEventListener('scroll', () => {
+    if (q) return;
+    q = true;
+    requestAnimationFrame(sync);
+  }, { passive: true });
+  sync();
 })();
 
 /* ---------- кнопки «скопировать» ---------- */

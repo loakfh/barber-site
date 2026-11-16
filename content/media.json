@@ -10,6 +10,23 @@
         1200
       ]
     },
+    "p04": {
+      "src": "p04.jpg",
+      "width": 721,
+      "height": 1280,
+      "widths": [
+        480
+      ]
+    },
+    "p05": {
+      "src": "p05.jpg",
+      "width": 1170,
+      "height": 1280,
+      "widths": [
+        480,
+        800
+      ]
+    },
     "p06": {
       "src": "p06.jpg",
       "width": 852,
@@ -35,6 +52,22 @@
       "widths": [
         480,
         800
+      ]
+    },
+    "p11": {
+      "src": "p11.jpg",
+      "width": 625,
+      "height": 1280,
+      "widths": [
+        480
+      ]
+    },
+    "p12": {
+      "src": "p12.jpg",
+      "width": 675,
+      "height": 1280,
+      "widths": [
+        480
       ]
     },
     "p13": {
