@@ -1,0 +1,358 @@
+---
+import '@fontsource/playfair-display/800.css';
+import '@fontsource/playfair-display/400-italic.css';
+import '@fontsource/inter-tight/300.css';
+import '@fontsource/inter-tight/400.css';
+import '@fontsource/inter-tight/600.css';
+import '../styles/global.css';
+import interCyr from '@fontsource/inter-tight/files/inter-tight-cyrillic-400-normal.woff2?url';
+import playfairLat from '@fontsource/playfair-display/files/playfair-display-latin-800-normal.woff2?url';
+import { cfg, media, isPreview } from '../lib/config.js';
+
+const B = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const { contacts: c, person } = cfg;
+const pageUrl = new URL(B, Astro.site).href;
+const hasLoc = cfg.locations.length > 0;
+const metros = cfg.locations.map((l: any) => l.metro);
+const title = hasLoc ? `${person.nameLatin}: барбер в Москве, метро ${metros.join(', ')}` : cfg.site.title;
+const tel = `tel:${c.phoneTel}`;
+const tg = `https://t.me/${c.telegram}`;
+const wa = `https://wa.me/${c.whatsapp}`;
+const ig = `https://www.instagram.com/${c.instagram}/`;
+const marks = cfg.site.showDraftMarks;
+const draft = (on: boolean) => (on && marks ? '<sup class="dr">черновик</sup>' : '');
+const num = (i: number) => String(i).padStart(2, '0');
+
+const pic = (id: string, sizes: string, alt: string, eager = false) => {
+  const m = media.photos[id];
+  const set = (ext: string) => m.widths.map((w: number) => `${B}media/photos/${id}-${w}.${ext} ${w}w`).join(', ');
+  return `<picture><source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><img src="${B}media/photos/${id}-${m.widths.at(-1)}.webp" srcset="${set('webp')}" sizes="${sizes}" width="${m.width}" height="${m.height}" alt="${alt}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
+};
+const ratio = (id: string) => `${media.photos[id].width} / ${media.photos[id].height}`;
+const hero = media.photos['hero-cutout'];
+const v = media.video['fire-1'];
+
+// нумерация секций: отзывы и «где» появляются, только когда для них есть данные
+const sections = [
+  { id: 'works', tr: 'İşler', ru: 'работы' },
+  { id: 'services', tr: 'Hizmetler', ru: 'услуги' },
+  { id: 'about', tr: 'Usta', ru: 'о мастере' },
+  ...(cfg.reviews.length ? [{ id: 'reviews', tr: 'Yorumlar', ru: 'отзывы' }] : []),
+  ...(hasLoc ? [{ id: 'where', tr: 'Adresler', ru: 'где' }] : []),
+  { id: 'contacts', tr: 'İletişim', ru: 'контакты' },
+];
+const lead = (id: string) => {
+  const i = sections.findIndex((s) => s.id === id);
+  const s = sections[i];
+  return `<p class="lead"><span class="idx">${num(i + 1)}</span><span lang="tr">${s.tr}</span> · ${s.ru}</p>`;
+};
+const DAYS: [string, string][] = [['mon', 'пн'], ['tue', 'вт'], ['wed', 'ср'], ['thu', 'чт'], ['fri', 'пт'], ['sat', 'сб'], ['sun', 'вс']];
+const hoursText = (l: any) => DAYS.filter(([k]) => l.hours[k]).map(([k, ru]) => `${ru} ${l.hours[k][0]}–${l.hours[k][1]}`).join(' · ');
+const yRoute = (l: any) => `https://yandex.ru/maps/?rtext=~${l.coords[0]},${l.coords[1]}&rtt=auto`;
+const gRoute = (l: any) => `https://2gis.ru/routeSearch/rsType/car/to/${l.coords[1]},${l.coords[0]}`;
+
+const sameAs = [tg, ig];
+const jsonLd = hasLoc
+  ? cfg.locations.map((l: any) => ({
+      '@context': 'https://schema.org',
+      '@type': 'HairSalon',
+      name: `${person.nameLatin}, ${l.name}`,
+      url: pageUrl,
+      telephone: c.phoneTel,
+      image: new URL(`${B}og.jpg`, Astro.site).href,
+      address: { '@type': 'PostalAddress', streetAddress: l.address, addressLocality: 'Москва', addressCountry: 'RU' },
+      geo: { '@type': 'GeoCoordinates', latitude: l.coords[0], longitude: l.coords[1] },
+      openingHoursSpecification: DAYS.filter(([k]) => l.hours[k]).map(([k]) => ({
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: { mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday' }[k],
+        opens: l.hours[k][0],
+        closes: l.hours[k][1],
+      })),
+      sameAs,
+    }))
+  : [{ '@context': 'https://schema.org', '@type': 'Person', name: person.nameLatin, jobTitle: person.jobTitle, telephone: c.phoneTel, url: pageUrl, address: { '@type': 'PostalAddress', addressLocality: 'Москва', addressCountry: 'RU' }, sameAs }];
+
+// в браузер уходит только то, что нужно панели записи и карте
+const clientCfg = {
+  contacts: { phoneTel: c.phoneTel, telegram: c.telegram, whatsapp: c.whatsapp, maxUrl: c.maxUrl },
+  booking: cfg.booking,
+  services: cfg.services.map((s: any) => ({ id: s.id, title: s.title })),
+  locations: cfg.locations,
+  mapsKey: cfg.yandexMapsApiKey,
+};
+const tape = `<span lang="tr">Türk berberi</span> · турецкий барбер · Москва · <span lang="tr">Sıhhatler olsun</span> · `;
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={cfg.site.description} />
+    {isPreview && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="canonical" href={pageUrl} />
+    <meta name="theme-color" content="#0a0b0d" />
+    <link rel="preload" as="image" href={`${B}media/video/fire-1-poster.webp`} fetchpriority="high" />
+    <link rel="preload" href={playfairLat} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={interCyr} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href={`${B}favicon.svg`} type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={cfg.site.description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={new URL(`${B}og.jpg`, Astro.site).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    {jsonLd.map((j: any) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        try {
+          if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('intro')) d.classList.add('intro-on');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <symbol id="mark" viewBox="0 0 64 24"><circle cx="17" cy="13" r="9.5" /><circle cx="47" cy="13" r="9.5" /><path d="M26.5 11q5.5-5 11 0M7.5 11 1 8.5M56.5 11 63 8.5" /></symbol>
+    </svg>
+    <a class="skip" href="#main">К содержанию</a>
+
+    <div class="intro" id="intro" aria-hidden="true">
+      <svg class="mark" viewBox="0 0 64 24"><use href="#mark" /></svg>
+      <p lang="tr">Hoş geldin</p>
+      <small>добро пожаловать · нажмите, чтобы пропустить</small>
+    </div>
+
+    <main id="main">
+      <div class="stack" data-scene>
+        <section class="hero" id="hero">
+          <div class="hero-in">
+<div class="hero-win">
+                        <video class="hero-v" muted loop playsinline preload="metadata" poster={`${B}media/video/fire-1-poster.webp`} width={v.width} height={v.height} aria-hidden="true" tabindex="-1">
+              <source src={`${B}media/video/fire-1.webm`} type="video/webm" />
+              <source src={`${B}media/video/fire-1.mp4`} type="video/mp4" />
+            </video>
+            </div>
+            <p class="mast"><svg class="mark" viewBox="0 0 64 24" aria-hidden="true"><use href="#mark" /></svg><span>Москва</span></p>
+            <div class="hero-txt">
+              <p class="kicker">{cfg.hero.kicker}</p>
+              <h1 class="name" lang="tr"><span>Tamer</span> <span>Örcü</span></h1>
+              <p class="tagline"><Fragment set:html={cfg.hero.tagline + draft(cfg.hero.draft)} /></p>
+              <div class="cta">
+                <button class="btn" type="button" data-book>Записаться</button>
+                <a class="call" href={tel}>Позвонить</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="cover" id="cover">
+          <div class="cover-txt">
+            <p class="cover-line rv"><Fragment set:html={cfg.cover.line + draft(cfg.cover.draft)} /></p>
+            <dl class="stats">
+              {cfg.stats.map((s: any) => (
+                <div class="stat rv"><dd>{s.value}</dd><dt>{s.label}</dt></div>
+              ))}
+            </dl>
+            <p class="locs rv">
+              {hasLoc ? `3 локации: ${metros.join(', ')}` : <Fragment>3 локации в Москве: <span class="todo">адреса появятся [TODO]</span></Fragment>}
+            </p>
+          </div>
+          <div class="cover-port" set:html={pic('hero-cutout', '(min-width: 900px) 40vw, 74vw', 'Тамер в чёрной рубашке и круглых тёмных очках, вполоборота')} />
+        </section>
+      </div>
+
+      <div class="tape" aria-hidden="true"><div class="tape-t"><span set:html={tape.repeat(6)} /><span set:html={tape.repeat(6)} /></div></div>
+
+      <div class="pin" data-scene>
+        <section class="manifest" id="manifest">
+          <div class="man-photo" set:html={pic('p13', '(min-width: 900px) 46vh, 100vw', 'Опасная бритва снимает пену со щеки, крупный план')} />
+          <i class="man-shade"></i>
+          <div class="man-txt">
+            <p class="lead">манифест</p>
+            {cfg.manifest.line ? (
+              <Fragment>
+                <p class="shout" lang="tr">{cfg.manifest.line}</p>
+                <p class="shout-tr">{cfg.manifest.translation}</p>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <p class="shout">Строка Тамера <span class="todo">[TODO]</span></p>
+                <p class="shout-tr">ниже мелко встанет русский перевод · фраза из его Telegram, ждёт согласия</p>
+              </Fragment>
+            )}
+          </div>
+        </section>
+      </div>
+
+      <section class="sec works" id="works">
+        <header class="sh">
+          <Fragment set:html={lead('works')} />
+          <h2 class="rv">Формы, которые я собрал</h2>
+          <div class="chips" role="group" aria-label="Тип работ">
+            <button class="chip" type="button" data-filter="all" aria-pressed="true">Все</button>
+            {cfg.galleryTypes.map((t: any) => <button class="chip" type="button" data-filter={t.id} aria-pressed="false">{t.label}</button>)}
+          </div>
+        </header>
+        <div class="rail-pin" data-rail>
+          <div class="rail-view">
+            <ul class="rail" id="rail">
+              {cfg.gallery.map((g: any, i: number) => (
+                <li class="shot" data-type={g.type} style={`aspect-ratio:${ratio(g.id)}`}>
+                  <button type="button" data-open={i} aria-label={`Открыть фото: ${g.alt}`} set:html={pic(g.id, '(min-width: 900px) 42vh, 70vw', g.alt)} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec services paper" id="services">
+        <header class="sh">
+          <Fragment set:html={lead('services')} />
+          <h2 class="rv">С чем вы выйдете из кресла</h2>
+        </header>
+        <ol class="svcs">
+          {cfg.services.map((s: any, i: number) => (
+            <li class="svc rv">
+              <span class="svc-n">{num(i + 1)}</span>
+              <div class="svc-b"><h3>{s.title}</h3><p><Fragment set:html={s.line + draft(s.draft)} /></p></div>
+              <button class="svc-go" type="button" data-book data-service={s.id} aria-label={`Записаться: ${s.title}`}>Записаться</button>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section class="sec about" id="about">
+        <header class="sh">
+          <Fragment set:html={lead('about')} />
+          <h2 class="rv">Путь из Турции в Москву</h2>
+        </header>
+        <div class="about-grid">
+          <ol class="path">
+            {cfg.about.map((a: any) => (
+              <li class="step rv">
+                <svg class="mark" viewBox="0 0 64 24" aria-hidden="true"><use href="#mark" /></svg>
+                <p class="step-big"><Fragment set:html={a.big + draft(a.draft)} /></p>
+                <p class="step-small">{a.small}</p>
+              </li>
+            ))}
+            <li class="step rv"><svg class="mark" viewBox="0 0 64 24" aria-hidden="true"><use href="#mark" /></svg><p class="step-big">Сейчас принимаю в Москве</p><p class="step-small">{cfg.aboutNote}</p></li>
+          </ol>
+          {cfg.guest && (
+            <figure class="guest rv">
+              <div style={`aspect-ratio:${ratio(cfg.guest.photo)}`} set:html={pic(cfg.guest.photo, '(min-width: 900px) 30vw, 88vw', cfg.guest.alt)} />
+              <figcaption><Fragment set:html={cfg.guest.caption + draft(cfg.guest.draft)} /></figcaption>
+            </figure>
+          )}
+        </div>
+      </section>
+
+      {cfg.reviews.length > 0 && (
+        <section class="sec reviews paper" id="reviews">
+          <header class="sh"><Fragment set:html={lead('reviews')} /><h2 class="rv">Что говорят после кресла</h2></header>
+          <ul class="revs">
+            {cfg.reviews.map((r: any) => (
+              <li class="rev rv"><blockquote>{r.text}</blockquote><p><b>{r.name}</b> · {r.source}</p></li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {hasLoc && (
+        <section class="sec where" id="where">
+          <header class="sh"><Fragment set:html={lead('where')} /><h2 class="rv">Выберите, куда удобнее</h2></header>
+          <div class="where-grid">
+            <ul class="locs-list">
+              {cfg.locations.map((l: any) => (
+                <li class="loc rv" id={`loc-${l.id}`} data-loc={l.id}>
+                  <p class="loc-status" data-status={l.id}></p>
+                  <h3>м. {l.metro}</h3>
+                  <p class="loc-name">{l.name}</p>
+                  <p>{l.address}</p>
+                  <p class="loc-hours">{hoursText(l)}</p>
+                  {l.howToGet && <p class="loc-how">{l.howToGet}</p>}
+                  <div class="loc-act">
+                    <button class="btn small" type="button" data-book data-location={l.id}>Записаться сюда</button>
+                    <a href={yRoute(l)} target="_blank" rel="noopener">Маршрут в Яндекс Картах</a>
+                    <a href={gRoute(l)} target="_blank" rel="noopener">Маршрут в 2ГИС</a>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div class="map" id="map" aria-label="Карта с тремя локациями"><p class="map-ph">Карта загрузится, когда вы до неё долистаете</p></div>
+          </div>
+        </section>
+      )}
+
+      <section class="sec contacts paper" id="contacts">
+        <header class="sh"><Fragment set:html={lead('contacts')} /><h2 class="rv">Напишите, и я подтвержу время</h2></header>
+        <ul class="cts">
+          <li class="ct rv"><span>Телефон</span><a href={tel}>{c.phoneDisplay}</a><button type="button" data-copy={c.phoneTel}>скопировать</button></li>
+          <li class="ct rv"><span>Telegram</span><a href={tg} target="_blank" rel="noopener">@{c.telegram}</a><button type="button" data-copy={`@${c.telegram}`}>скопировать</button></li>
+          <li class="ct rv"><span>WhatsApp</span><a href={wa} target="_blank" rel="noopener">{c.phoneDisplay}</a><button type="button" data-copy={c.phoneTel}>скопировать</button></li>
+          {c.maxUrl && <li class="ct rv"><span>MAX</span><a href={c.maxUrl} target="_blank" rel="noopener">профиль в MAX</a><button type="button" data-copy={c.maxUrl}>скопировать</button></li>}
+          <li class="ct rv"><span>Instagram</span><a href={ig} target="_blank" rel="noopener">{c.instagram}</a><button type="button" data-copy={c.instagram}>скопировать</button></li>
+        </ul>
+        <div class="cta wide"><button class="btn" type="button" data-book>Записаться</button></div>
+      </section>
+
+      <section class="finale" id="finale">
+        <svg class="mark" viewBox="0 0 64 24" aria-hidden="true"><use href="#mark" /></svg>
+        <p class="fin rv" lang="tr">Sıhhatler olsun</p>
+        <p class="fin-tr rv">на здоровье, так в Турции говорят после стрижки</p>
+      </section>
+    </main>
+
+    <nav class="bar" aria-label="Быстрые действия">
+      <button type="button" data-book class="bar-main">Записаться</button>
+      <a href={tel}>Позвонить</a>
+      {hasLoc && <button type="button" data-route>Маршрут</button>}
+    </nav>
+
+    <dialog class="sheet" id="booking" aria-labelledby="bkTitle">
+      <form method="dialog" class="sheet-head">
+        <h2 id="bkTitle">Заявка на запись</h2>
+        <button class="x" aria-label="Закрыть">×</button>
+      </form>
+      <p class="bk-sum" id="bkSum" aria-live="polite"></p>
+      <div class="bk-body" id="bkBody"></div>
+      <div class="bk-send">
+        <p class="bk-hint">Это заявка: Тамер подтвердит время в чате.</p>
+        <div class="bk-btns" id="bkBtns"></div>
+        <a class="bk-call" href={tel}>Или позвонить: {c.phoneDisplay}</a>
+      </div>
+    </dialog>
+
+    {hasLoc && (
+      <dialog class="sheet" id="routes" aria-labelledby="rtTitle">
+        <form method="dialog" class="sheet-head"><h2 id="rtTitle">Куда проложить маршрут</h2><button class="x" aria-label="Закрыть">×</button></form>
+        <ul class="rt-list">
+          {cfg.locations.map((l: any) => (
+            <li><b>м. {l.metro}</b><span>{l.address}</span><div><a href={yRoute(l)} target="_blank" rel="noopener">Яндекс Карты</a><a href={gRoute(l)} target="_blank" rel="noopener">2ГИС</a></div></li>
+          ))}
+        </ul>
+      </dialog>
+    )}
+
+    <dialog class="lb" id="lb" aria-label="Просмотр фото">
+      <form method="dialog"><button class="x" aria-label="Закрыть">×</button></form>
+      <ul class="lb-track" id="lbTrack">
+        {cfg.gallery.map((g: any) => <li data-type={g.type} set:html={pic(g.id, '100vw', g.alt)} />)}
+      </ul>
+      <p class="lb-n" id="lbN" aria-live="polite"></p>
+    </dialog>
+
+    <p class="toast" id="toast" role="status" aria-live="polite"></p>
+    <script type="application/json" id="cfg" set:html={JSON.stringify(clientCfg)} />
+    <script>
+      import '../scripts/main.js';
+      import { initBooking } from '../scripts/booking.js';
+      initBooking(JSON.parse(document.getElementById('cfg').textContent));
+    </script>
+  </body>
+</html>

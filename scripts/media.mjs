@@ -14,7 +14,7 @@ const only = process.argv[2];
 const OUT = 'public/media';
 const MANIFEST = 'content/media.json';
 const WIDTHS = [480, 800, 1200, 1600];
-const manifest = existsSync(MANIFEST) ? JSON.parse(readFileSync(MANIFEST, 'utf8')) : { photos: {}, video: {} };
+const manifest = { photos: {}, video: {} };
 // имя файла → латиница без пробелов: кириллица в путях ломается на части хостингов
 const RU = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
 const LAT = ['a','b','v','g','d','e','e','zh','z','i','y','k','l','m','n','o','p','r','s','t','u','f','h','c','ch','sh','sch','','y','','e','yu','ya'];
@@ -31,7 +31,10 @@ const claim = (id, src) => {
   taken.set(id, src);
   return id;
 };
-const list = (dir, re) => (existsSync(dir) ? readdirSync(dir).filter((f) => re.test(f)).sort() : []);
+// В public/ (и в репозиторий) идут только файлы из списка content/media-use.json:
+// остальные исходники наружу не выкладываем.
+const USE = JSON.parse(readFileSync('content/media-use.json', 'utf8'));
+const list = (dir, re) => (existsSync(dir) ? readdirSync(dir).filter((f) => re.test(f) && [...USE.photos, ...USE.video].includes(slug(f))).sort() : []);
 
 async function photo(src, id, { alpha = false } = {}) {
   const img = sharp(src).rotate(); // поворот по EXIF, затем EXIF отбрасывается
@@ -47,7 +50,7 @@ async function photo(src, id, { alpha = false } = {}) {
     await pipe.clone().avif({ quality: alpha ? 60 : 52, effort: 6 }).toFile(`${base}.avif`);
     await pipe.clone().webp({ quality: alpha ? 82 : 76, alphaQuality: 90 }).toFile(`${base}.webp`);
   }
-  manifest.photos[id] = { src: basename(src), width: w, height: h, widths, alt: manifest.photos[id]?.alt ?? '', type: manifest.photos[id]?.type ?? '' };
+  manifest.photos[id] = { src: basename(src), width: w, height: h, widths,  };
   console.log(`фото  ${id}: ${w}×${h} → ${widths.join(', ')}`);
 }
 

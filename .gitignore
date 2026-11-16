@@ -9,5 +9,4 @@ content/video/raw/
 
 content/resume-raw.md
 content/photos/raw-hero-cutout-original.png
-# сжатые медиа пересобираются командой npm run media; в репозиторий идут только те, что стоят в предпросмотре
-public/media/
+dist-test/
