@@ -1,0 +1,21 @@
+{
+  "_readme": "Единственный файл с контактами, локациями, услугами и отзывами. Всё, чего нет в исходниках, помечено [TODO] и перечислено в CONTENT_TODO.md.",
+  "site": { "url": "[TODO] домен .ru", "lang": "ru", "timezone": "Europe/Moscow" },
+  "person": {
+    "nameLatin": "Tamer Orcu",
+    "nameRu": "[TODO] русское написание имени из facts.md"
+  },
+  "contacts": {
+    "phoneDisplay": "+7 927 037-67-67",
+    "phoneTel": "+79270376767",
+    "telegram": "tamerorcu",
+    "whatsapp": "79270376767",
+    "maxUrl": "[TODO] ссылка на профиль MAX из facts.md",
+    "instagram": "barber_tamerorcu"
+  },
+  "metrika": { "counterId": null },
+  "booking": { "daysAhead": 14, "stepMinutes": 30 },
+  "locations": [],
+  "services": [],
+  "reviews": []
+}

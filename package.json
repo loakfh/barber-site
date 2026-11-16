@@ -1,0 +1,14 @@
+{
+  "name": "barber-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "media": "node scripts/media.mjs",
+    "todo": "grep -rn \"\\[TODO\\]\" content/*.json content/*.md src 2>/dev/null || true"
+  },
+  "devDependencies": {
+    "fontkit": "^2.0.4",
+    "sharp": "^0.34.0"
+  }
+}

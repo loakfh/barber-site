@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+work/
+.DS_Store
+# исходники до сжатия в репозиторий не кладём: тяжёлые и с метаданными телефона
+content/photos/raw/
+content/video/raw/
