@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "media": "node scripts/media.mjs",
-    "todo": "grep -rn \"\\[TODO\\]\" content/*.json content/*.md src 2>/dev/null || true"
+    "todo": "grep -rn \"\\[TODO\\]\" content/*.json content/*.md src 2>/dev/null || true",
+    "preview:build": "node scripts/build-preview.mjs"
   },
   "devDependencies": {
     "fontkit": "^2.0.4",
