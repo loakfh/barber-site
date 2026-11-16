@@ -1,13 +1,42 @@
 {
   "photos": {
-    "p01": {
-      "src": "p01.jpg",
-      "width": 1206,
-      "height": 1185,
+    "m-back": {
+      "src": "m-back.jpg",
+      "width": 784,
+      "height": 742,
+      "widths": [
+        480,
+        784
+      ]
+    },
+    "m-boy": {
+      "src": "m-boy.jpg",
+      "width": 591,
+      "height": 1280,
+      "widths": [
+        480,
+        591
+      ]
+    },
+    "m-curly": {
+      "src": "m-curly.jpg",
+      "width": 792,
+      "height": 834,
+      "widths": [
+        480,
+        792
+      ]
+    },
+    "m-pair": {
+      "src": "m-pair.jpg",
+      "width": 1930,
+      "height": 1280,
       "widths": [
         480,
         800,
-        1200
+        1200,
+        1600,
+        1930
       ]
     },
     "p04": {
@@ -15,7 +44,8 @@
       "width": 721,
       "height": 1280,
       "widths": [
-        480
+        480,
+        721
       ]
     },
     "p05": {
@@ -24,86 +54,8 @@
       "height": 1280,
       "widths": [
         480,
-        800
-      ]
-    },
-    "p06": {
-      "src": "p06.jpg",
-      "width": 852,
-      "height": 1280,
-      "widths": [
-        480,
-        800
-      ]
-    },
-    "p07": {
-      "src": "p07.jpg",
-      "width": 960,
-      "height": 1280,
-      "widths": [
-        480,
-        800
-      ]
-    },
-    "p08": {
-      "src": "p08.jpg",
-      "width": 960,
-      "height": 1280,
-      "widths": [
-        480,
-        800
-      ]
-    },
-    "p11": {
-      "src": "p11.jpg",
-      "width": 625,
-      "height": 1280,
-      "widths": [
-        480
-      ]
-    },
-    "p12": {
-      "src": "p12.jpg",
-      "width": 675,
-      "height": 1280,
-      "widths": [
-        480
-      ]
-    },
-    "p13": {
-      "src": "p13.jpg",
-      "width": 852,
-      "height": 1280,
-      "widths": [
-        480,
-        800
-      ]
-    },
-    "p14": {
-      "src": "p14.jpg",
-      "width": 852,
-      "height": 1280,
-      "widths": [
-        480,
-        800
-      ]
-    },
-    "p15": {
-      "src": "p15.jpg",
-      "width": 852,
-      "height": 1280,
-      "widths": [
-        480,
-        800
-      ]
-    },
-    "p16": {
-      "src": "p16.jpg",
-      "width": 852,
-      "height": 1280,
-      "widths": [
-        480,
-        800
+        800,
+        1170
       ]
     },
     "p17": {
@@ -112,7 +64,46 @@
       "height": 1280,
       "widths": [
         480,
+        800,
+        960
+      ]
+    },
+    "w-mirror": {
+      "src": "w-mirror.jpg",
+      "width": 852,
+      "height": 1280,
+      "widths": [
+        480,
         800
+      ]
+    },
+    "w-pair": {
+      "src": "w-pair.jpg",
+      "width": 1310,
+      "height": 1280,
+      "widths": [
+        480,
+        800,
+        1200,
+        1310
+      ]
+    },
+    "w-selfie": {
+      "src": "w-selfie.jpg",
+      "width": 784,
+      "height": 1058,
+      "widths": [
+        480,
+        784
+      ]
+    },
+    "w-straight": {
+      "src": "w-straight.jpg",
+      "width": 780,
+      "height": 790,
+      "widths": [
+        480,
+        780
       ]
     },
     "hero-cutout": {
@@ -126,6 +117,12 @@
     }
   },
   "video": {
+    "cut-1": {
+      "src": "cut-1.mp4",
+      "width": 480,
+      "height": 848,
+      "duration": 3.8
+    },
     "fire-1": {
       "src": "fire-1.mp4",
       "width": 720,

@@ -30,6 +30,11 @@ const pic = (id: string, sizes: string, alt: string, eager = false) => {
   const set = (ext: string) => m.widths.map((w: number) => `${B}media/photos/${id}-${w}.${ext} ${w}w`).join(', ');
   return `<picture><source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><img src="${B}media/photos/${id}-${m.widths.at(-1)}.webp" srcset="${set('webp')}" sizes="${sizes}" width="${m.width}" height="${m.height}" alt="${alt}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
 };
+// видео в ленте работ: без звука, играет только пока в кадре
+const vid = (id: string, alt: string) => {
+  const m = media.video[id];
+  return `<video data-auto muted loop playsinline preload="none" poster="${B}media/video/${id}-poster.webp" width="${m.width}" height="${m.height}" aria-label="${alt}"><source src="${B}media/video/${id}.webm" type="video/webm"><source src="${B}media/video/${id}.mp4" type="video/mp4"></video>`;
+};
 const ratio = (id: string) => `${media.photos[id].width} / ${media.photos[id].height}`;
 const hero = media.photos['hero-cutout'];
 const v = media.video['fire-1'];
@@ -121,7 +126,7 @@ const copyIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" 
         <section class="hero" id="hero">
           <div class="hero-in">
 <div class="hero-win">
-                        <video class="hero-v" muted loop playsinline preload="metadata" poster={`${B}media/video/fire-1-poster.webp`} width={v.width} height={v.height} aria-hidden="true" tabindex="-1">
+                        <video class="hero-v" data-auto muted loop playsinline preload="metadata" poster={`${B}media/video/fire-1-poster.webp`} width={v.width} height={v.height} aria-hidden="true" tabindex="-1">
               <source src={`${B}media/video/fire-1.webm`} type="video/webm" />
               <source src={`${B}media/video/fire-1.mp4`} type="video/mp4" />
             </video>
@@ -164,8 +169,12 @@ const copyIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" 
           <div class="rail-view">
             <ul class="rail" id="rail">
               {cfg.gallery.map((g: any, i: number) => (
-                <li class="shot" data-type={g.type} hidden={g.type !== cfg.galleryTypes[0].id} style={`aspect-ratio:${ratio(g.id)}`}>
-                  <button type="button" data-open={i} aria-label={`Открыть фото: ${g.alt}`} set:html={pic(g.id, '(min-width: 900px) 46vh, 72vw', g.alt)} />
+                <li class:list={['shot', { wide: g.wide }]} data-type={g.type} hidden={g.type !== cfg.galleryTypes[0].id} style={`aspect-ratio:${g.video ? `${media.video[g.video].width} / ${media.video[g.video].height}` : ratio(g.id)}`}>
+                  {g.video ? (
+                    <button type="button" data-open={i} aria-label={`Открыть видео: ${g.alt}`} set:html={vid(g.video, g.alt)} />
+                  ) : (
+                    <button type="button" data-open={i} aria-label={`Открыть фото: ${g.alt}`} set:html={pic(g.id, g.wide ? '(min-width: 900px) 100vh, 88vw' : '(min-width: 900px) 46vh, 72vw', g.alt)} />
+                  )}
                   {g.caption && <p class="shot-cap">{g.caption}</p>}
                 </li>
               ))}
@@ -215,7 +224,7 @@ const copyIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" 
         <header class="sh"><h2 class="rv">Садитесь в кресло</h2></header>
         <div class="chair">
           <div class="ch-head rv"></div>
-          <div class="ch-neck rv" aria-hidden="true"><i></i><i></i></div>
+          <div class="ch-neck rv" aria-hidden="true"></div>
           <ul class="ch-back rv">
             <li><span>Телефон</span><a href={tel}>{c.phoneDisplay}</a><button type="button" data-copy={c.phoneTel} aria-label="Скопировать телефон" set:html={copyIcon} /></li>
             <li><span>Telegram</span><a href={tg} target="_blank" rel="noopener">@{c.telegram}</a><button type="button" data-copy={`@${c.telegram}`} aria-label="Скопировать ник в Telegram" set:html={copyIcon} /></li>
@@ -225,8 +234,6 @@ const copyIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" 
           </ul>
           <div class="ch-seat rv"><i class="arm l"></i><i class="arm r"></i><button class="btn" type="button" data-book>Записаться</button></div>
           <div class="ch-post rv" aria-hidden="true"></div>
-          <div class="ch-rest rv" aria-hidden="true"></div>
-          <div class="ch-post short rv" aria-hidden="true"></div>
           <div class="ch-base rv" aria-hidden="true"></div>
         </div>
       </section>
@@ -272,7 +279,7 @@ const copyIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" 
     <dialog class="lb" id="lb" aria-label="Просмотр фото">
       <form method="dialog"><button class="x" aria-label="Закрыть">×</button></form>
       <ul class="lb-track" id="lbTrack">
-        {cfg.gallery.map((g: any) => <li data-type={g.type} hidden={g.type !== cfg.galleryTypes[0].id} set:html={pic(g.id, '100vw', g.alt)} />)}
+        {cfg.gallery.map((g: any) => <li data-type={g.type} hidden={g.type !== cfg.galleryTypes[0].id} set:html={g.video ? vid(g.video, g.alt) : pic(g.id, '100vw', g.alt)} />)}
       </ul>
       <p class="lb-n" id="lbN" aria-live="polite"></p>
     </dialog>

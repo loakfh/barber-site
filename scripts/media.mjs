@@ -42,7 +42,8 @@ async function photo(src, id, { alpha = false } = {}) {
   const turned = (meta.orientation ?? 1) >= 5;
   const [w, h] = turned ? [meta.height, meta.width] : [meta.width, meta.height];
   const widths = WIDTHS.filter((x) => x <= w);
-  if (!widths.length) widths.push(w);
+  // исходник уже́ ближайшей ступени: добавляем его родную ширину, чтобы не терять резкость
+  if (!widths.length || w - widths.at(-1) > 80) widths.push(w);
   mkdirSync(join(OUT, 'photos'), { recursive: true });
   for (const width of widths) {
     const base = join(OUT, 'photos', `${id}-${width}`);

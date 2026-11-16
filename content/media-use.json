@@ -1,20 +1,19 @@
 {
   "photos": [
-    "p01",
+    "m-pair",
+    "m-boy",
+    "p17",
+    "m-curly",
+    "m-back",
+    "w-pair",
+    "w-mirror",
     "p04",
     "p05",
-    "p06",
-    "p07",
-    "p08",
-    "p11",
-    "p12",
-    "p13",
-    "p14",
-    "p15",
-    "p16",
-    "p17"
+    "w-straight",
+    "w-selfie"
   ],
   "video": [
-    "fire-1"
+    "fire-1",
+    "cut-1"
   ]
 }

@@ -43,10 +43,10 @@ if ('IntersectionObserver' in window && !calm) {
 }
 
 /* ---------- видео и бегущая строка работают только в кадре ---------- */
-const video = document.querySelector('.hero-v');
 if ('IntersectionObserver' in window) {
-  if (video && !calm) {
-    new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? video.play().catch(() => {}) : video.pause())), { threshold: 0.1 }).observe(video);
+  if (!calm) {
+    const vio = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause())), { threshold: 0.25 });
+    document.querySelectorAll('video[data-auto]').forEach((v) => vio.observe(v));
   }
   const tapeIo = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle('run', e.isIntersecting)));
   document.querySelectorAll('.tape').forEach((el) => tapeIo.observe(el));
