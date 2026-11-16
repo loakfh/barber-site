@@ -169,7 +169,8 @@ dialog::backdrop{background:#000000b3}
 .x{width:44px;height:44px;font-size:30px;line-height:1;border-radius:50%}
 .bk-sum{padding:0 20px 12px;font-weight:600;font-size:15px;border-bottom:1px solid #15171b26}
 .bk-body{overflow-y:auto;overflow-x:clip;padding:14px 20px;flex:1;min-height:0}
-.bk-body fieldset{margin-bottom:16px}
+/* без min-width:0 fieldset растягивается по содержимому и лента дней не листается */
+.bk-body fieldset{margin-bottom:16px;min-width:0}
 .bk-body legend{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin-bottom:8px;padding:0}
 .opts{display:flex;gap:8px}
 .opts.col{flex-direction:column}

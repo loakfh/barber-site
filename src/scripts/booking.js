@@ -132,6 +132,8 @@ export function initBooking(cfg) {
       .map((s) => opt('service', s.id, esc(s.title), state.service?.id === s.id))
       .join('')}</div></fieldset>`;
     body.innerHTML = html;
+    // после перерисовки выбранный день и услуга остаются в поле зрения своей ленты
+    body.querySelectorAll('.opts.row .opt.on').forEach((el) => (el.parentElement.scrollLeft = Math.max(0, el.offsetLeft - el.parentElement.offsetLeft - 20)));
 
     const text = buildMessage(state);
     const last = remember.get();
