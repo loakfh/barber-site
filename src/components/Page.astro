@@ -1,0 +1,359 @@
+---
+import '@fontsource/playfair-display/800.css';
+import '@fontsource/playfair-display/400-italic.css';
+import '@fontsource/inter-tight/300.css';
+import '@fontsource/inter-tight/400.css';
+import '@fontsource/inter-tight/600.css';
+import '../styles/global.css';
+import interCyr from '@fontsource/inter-tight/files/inter-tight-cyrillic-400-normal.woff2?url';
+import interLat from '@fontsource/inter-tight/files/inter-tight-latin-400-normal.woff2?url';
+import playfairLat from '@fontsource/playfair-display/files/playfair-display-latin-800-normal.woff2?url';
+import { cfg, media, isPreview } from '../lib/config.js';
+import { UI, pick } from '../lib/strings.js';
+
+const { lang = 'ru' } = Astro.props;
+const u = UI[lang];
+const t = pick(lang);
+
+const B = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const { contacts: c, person } = cfg;
+const urls = { ru: new URL(B, Astro.site).href, tr: new URL(`${B}tr/`, Astro.site).href };
+const paths = { ru: B, tr: `${B}tr/` };
+const pageUrl = urls[lang];
+const hasLoc = cfg.locations.length > 0;
+const hasMap = hasLoc && cfg.locations.every((l: any) => l.coords);
+// имя на первом экране всегда латиницей, как пишет его сам Тамер
+const [first, ...rest] = person.nameLatin.split(' ');
+const fullName = lang === 'ru' ? `${person.nameRu} (${person.nameLatin})` : person.nameLatin;
+const title = t(cfg.site.title);
+const description = t(cfg.site.description);
+const tel = `tel:${c.phoneTel}`;
+const tg = `https://t.me/${c.telegram}`;
+const wa = `https://wa.me/${c.whatsapp}`;
+const marks = cfg.site.showDraftMarks;
+const draft = (on: boolean) => (on && marks ? `<sup class="dr">${u.draft}</sup>` : '');
+const num = (i: number) => String(i + 1).padStart(2, '0');
+
+const pic = (id: string, sizes: string, alt: string, eager = false) => {
+  const m = media.photos[id];
+  const set = (ext: string) => m.widths.map((w: number) => `${B}media/photos/${id}-${w}.${ext} ${w}w`).join(', ');
+  return `<picture><source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><img src="${B}media/photos/${id}-${m.widths.at(-1)}.webp" srcset="${set('webp')}" sizes="${sizes}" width="${m.width}" height="${m.height}" alt="${alt}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
+};
+// видео без звука, играет только пока в кадре
+const vid = (id: string, alt: string) => {
+  const m = media.video[id];
+  return `<video data-auto muted loop playsinline preload="none" poster="${B}media/video/${id}-poster.webp" width="${m.width}" height="${m.height}" aria-label="${alt}"><source src="${B}media/video/${id}.webm" type="video/webm"><source src="${B}media/video/${id}.mp4" type="video/mp4"></video>`;
+};
+const v = media.video['fire-1'];
+
+// локации: подписи для карточек, панели записи и текста сообщения
+const locs = cfg.locations.map((l: any) => {
+  const name = t(l.name);
+  const address = t(l.address);
+  const floor = t(l.floor);
+  const metro = l.metro ? `${u.metro} ${t(l.metro)}` : '';
+  const q = encodeURIComponent(l.query || `Москва, ${address}`);
+  return {
+    id: l.id,
+    name,
+    address,
+    floor,
+    metro,
+    hours: l.hours || null,
+    coords: l.coords || null,
+    howToGet: t(l.howToGet),
+    // в панели записи: крупно то, по чему место узнают, мелко остальное
+    title: metro || name || address,
+    sub: [metro || name ? address : '', floor].filter(Boolean).join(', '),
+    msg: [name || address, metro || (name ? address : '')].filter(Boolean).join(', '),
+    yandex: l.coords ? `https://yandex.ru/maps/?rtext=~${l.coords[0]},${l.coords[1]}&rtt=auto` : `https://yandex.ru/maps/?text=${q}`,
+    gis: l.coords ? `https://2gis.ru/routeSearch/rsType/car/to/${l.coords[1]},${l.coords[0]}` : `https://2gis.ru/moscow/search/${q}`,
+  };
+});
+const hoursText = (l: any) => u.days.filter(([k]: string[]) => l.hours[k]).map(([k, d]: string[]) => `${d} ${l.hours[k][0]}–${l.hours[k][1]}`).join(' · ');
+const DAY_EN: Record<string, string> = { mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday' };
+
+const sameAs = [tg];
+const jsonLd = hasLoc
+  ? locs.map((l: any) => ({
+      '@context': 'https://schema.org',
+      '@type': 'HairSalon',
+      name: [person.nameLatin, l.name].filter(Boolean).join(', '),
+      alternateName: person.nameRu,
+      url: pageUrl,
+      telephone: c.phoneTel,
+      image: new URL(`${B}og.jpg`, Astro.site).href,
+      address: { '@type': 'PostalAddress', streetAddress: l.address, addressLocality: lang === 'ru' ? 'Москва' : 'Moskova', addressCountry: 'RU' },
+      ...(l.coords ? { geo: { '@type': 'GeoCoordinates', latitude: l.coords[0], longitude: l.coords[1] } } : {}),
+      ...(l.hours
+        ? { openingHoursSpecification: Object.keys(DAY_EN).filter((k) => l.hours[k]).map((k) => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: DAY_EN[k], opens: l.hours[k][0], closes: l.hours[k][1] })) }
+        : {}),
+      sameAs,
+    }))
+  : [{ '@context': 'https://schema.org', '@type': 'Person', name: person.nameLatin, alternateName: person.nameRu, jobTitle: t(person.jobTitle), telephone: c.phoneTel, url: pageUrl, address: { '@type': 'PostalAddress', addressLocality: 'Москва', addressCountry: 'RU' }, sameAs }];
+
+// в браузер уходит только то, что нужно панели записи и карте
+const clientCfg = {
+  lang,
+  contacts: { phoneTel: c.phoneTel, telegram: c.telegram, whatsapp: c.whatsapp, maxUrl: c.maxUrl },
+  booking: cfg.booking,
+  services: cfg.services.map((s: any) => ({ id: s.id, title: t(s.title) })),
+  locations: locs.map((l: any) => ({ id: l.id, title: l.title, sub: l.sub, msg: l.msg, hours: l.hours, coords: l.coords })),
+  mapsKey: cfg.yandexMapsApiKey,
+  ui: { copied: u.copied, copyFail: u.copyFail, mapFail: u.mapFail },
+};
+const tape = [`${t(cfg.hero.kicker)} ${person.nameLatin}`, ...cfg.tape[lang]].join(' · ') + ' · ';
+const copyIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.500"/><path d="M5 15V6.500A2.500 2.500 0 0 1 7.500 4H15"/></svg>';
+const playIcon = '<svg class="tile-v" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.500v13l11-6.500z"/></svg>';
+const navItems = [['works', u.nav.works], ['about', u.nav.about], ...(hasLoc ? [['where', u.nav.where]] : []), ['contacts', u.nav.contacts]];
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {isPreview && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="canonical" href={pageUrl} />
+    <link rel="alternate" hreflang="ru" href={urls.ru} />
+    <link rel="alternate" hreflang="tr" href={urls.tr} />
+    <link rel="alternate" hreflang="x-default" href={urls.ru} />
+    <meta name="theme-color" content="#0a0b0d" />
+    <link rel="preload" as="image" href={`${B}media/video/fire-1-poster.webp`} fetchpriority="high" />
+    <link rel="preload" href={playfairLat} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={lang === 'ru' ? interCyr : interLat} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href={`${B}favicon.svg`} type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={u.locale} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={new URL(`${B}og.jpg`, Astro.site).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    {jsonLd.map((j: any) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        try {
+          if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('intro')) d.classList.add('intro-on');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <symbol id="mark" viewBox="0 0 64 24"><circle cx="17" cy="13" r="9.5" /><circle cx="47" cy="13" r="9.5" /><path d="M26.5 11q5.5-5 11 0M7.5 11 1 8.5M56.5 11 63 8.5" /></symbol>
+    </svg>
+    <a class="skip" href="#main">{u.skip}</a>
+
+    <div class="intro" id="intro" aria-hidden="true">
+      <svg class="mark" viewBox="0 0 64 24"><use href="#mark" /></svg>
+      <p>{person.nameLatin}</p>
+      <span>{u.introSkip}</span>
+    </div>
+
+    <header class="top">
+      <nav class="nav" id="nav" aria-label={u.navLabel}>
+        <button class="nav-btn" type="button" id="navBtn" aria-expanded="false" aria-controls="navList"><i aria-hidden="true"></i>{u.menu}</button>
+        <ul class="nav-list" id="navList">
+          {navItems.map(([id, label]) => <li><a href={`#${id}`}>{label}</a></li>)}
+        </ul>
+      </nav>
+      <p class="lang" role="group" aria-label={u.langLabel}>
+        <a href={paths.ru} hreflang="ru" lang="ru" aria-current={lang === 'ru' ? 'true' : undefined} aria-label="Русский">RU</a>
+        <a href={paths.tr} hreflang="tr" lang="tr" aria-current={lang === 'tr' ? 'true' : undefined} aria-label="Türkçe">TR</a>
+      </p>
+    </header>
+
+    <main id="main">
+      <div class="stack" data-scene>
+        <section class="hero" id="hero">
+          <div class="hero-in">
+            <div class="hero-win">
+              <video class="hero-v" data-auto muted loop playsinline preload="metadata" poster={`${B}media/video/fire-1-poster.webp`} width={v.width} height={v.height} aria-hidden="true" tabindex="-1">
+                <source src={`${B}media/video/fire-1.webm`} type="video/webm" />
+                <source src={`${B}media/video/fire-1.mp4`} type="video/mp4" />
+              </video>
+            </div>
+            <div class="hero-txt">
+              <h1 class="name" lang="tr" aria-label={`${t(cfg.hero.kicker)} ${fullName}`}><small lang={lang}>{t(cfg.hero.kicker)}</small><span>{first}</span> <span>{rest.join(' ')}</span></h1>
+              <div class="cta">
+                <button class="btn" type="button" data-book>{u.book}</button>
+                <a class="call" href={tel}>{u.call}</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- верх бумажного листа с цифрами виден уже на первом экране: понятно, что страница продолжается -->
+        <section class="cover" id="cover">
+          <dl class="stats">
+            {cfg.stats.map((s: any) => (
+              <div class="stat"><dd>{t(s.value)}</dd><dt>{t(s.label)}</dt></div>
+            ))}
+          </dl>
+          <p class="cover-line rv"><Fragment set:html={t(cfg.cover.line) + draft(cfg.cover.draft)} /></p>
+          <div class="cover-port" set:html={pic('hero-cutout', '(min-width: 900px) 40vw, 66vw', lang === 'ru' ? 'Тамер в чёрной рубашке и круглых тёмных очках, вполоборота' : 'Tamer siyah gömlek ve yuvarlak koyu gözlükle, yarı profilden')} />
+        </section>
+      </div>
+
+      <div class="tape" aria-hidden="true"><div class="tape-t"><span set:html={tape.repeat(6)} /><span set:html={tape.repeat(6)} /></div></div>
+
+      <section class="sec works" id="works">
+        <header class="sh"><h2 class="rv">{u.worksTitle}</h2></header>
+        <ul class="grid" id="grid">
+          {cfg.gallery.map((g: any, i: number) => (
+            <li class:list={['tile', { wide: g.wide }]}>
+              {g.video ? (
+                <button type="button" data-open={i} aria-label={`${u.openVideo}: ${t(g.alt)}`} set:html={vid(g.video, t(g.alt)) + playIcon} />
+              ) : (
+                <button type="button" data-open={i} aria-label={`${u.openPhoto}: ${t(g.alt)}`} set:html={pic(g.id, g.wide ? '(min-width: 900px) 440px, 67vw' : '(min-width: 900px) 220px, 34vw', t(g.alt))} />
+              )}
+              {g.caption && <p class="tile-cap">{t(g.caption)}</p>}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="sec about paper" id="about">
+        <header class="sh"><h2 class="rv">{u.aboutTitle}</h2></header>
+        <div class="about-grid">
+          <div class="about-main">
+            <p class="about-lead rv">{t(cfg.about.lead)}</p>
+            {cfg.about.text.map((p: any) => <p class="about-p rv">{t(p)}</p>)}
+            <h3 class="about-h rv">{t(cfg.about.doTitle)}</h3>
+            <ul class="do rv">
+              {cfg.about.do.map((d: any) => <li>{t(d)}</li>)}
+            </ul>
+          </div>
+          <div class="about-side">
+            <figure class="about-photo rv" set:html={pic(cfg.about.photo, '(min-width: 900px) 34vw, 100vw', t(cfg.about.photoAlt))} />
+            <h3 class="about-h rv">{t(cfg.about.pathTitle)}</h3>
+            <ol class="path">
+              {cfg.about.path.map((s: any) => (
+                <li class="step rv"><svg class="mark" viewBox="0 0 64 24" aria-hidden="true"><use href="#mark" /></svg><b>{t(s.place)}</b><span>{t(s.text)}</span></li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec fire" id="fire">
+        <div class="fire-v rv" set:html={vid(cfg.fire.video, t(cfg.fire.videoAlt))} />
+        <div class="fire-txt">
+          <p class="lead rv">{u.askLabel}</p>
+          <h2 class="fire-q rv">{t(cfg.fire.question)}</h2>
+          <p class="lead rv">{u.answerLabel}</p>
+          <p class="fire-a rv"><Fragment set:html={t(cfg.fire.answer) + draft(cfg.fire.draft)} /></p>
+        </div>
+      </section>
+
+      {cfg.reviews.length > 0 && (
+        <section class="sec reviews paper" id="reviews">
+          <header class="sh"><h2 class="rv">{u.reviewsTitle}</h2></header>
+          <ul class="revs">
+            {cfg.reviews.map((r: any) => (
+              <li class="rev rv"><blockquote>{t(r.text)}</blockquote><p><b>{t(r.name)}</b> · {t(r.source)}</p></li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {hasLoc && (
+        <section class="sec where paper" id="where">
+          <header class="sh"><h2 class="rv">{u.whereTitle}</h2></header>
+          <div class:list={['where-grid', { 'with-map': hasMap }]}>
+            <ol class="locs-list">
+              {locs.map((l: any, i: number) => (
+                <li class="loc rv" id={`loc-${l.id}`} data-loc={l.id}>
+                  <span class="loc-n" aria-hidden="true">{num(i)}</span>
+                  <div class="loc-b">
+                    {l.hours && <p class="loc-status" data-status={l.id}></p>}
+                    <h3>{l.name || l.address}</h3>
+                    {l.metro && <p class="loc-metro">{l.metro}</p>}
+                    <p class="loc-addr">{[l.name ? l.address : '', l.floor].filter(Boolean).join(', ')}</p>
+                    {l.hours && <p class="loc-hours">{hoursText(l)}</p>}
+                    {l.howToGet && <p class="loc-how">{l.howToGet}</p>}
+                    <div class="loc-act">
+                      <button class="btn small" type="button" data-book data-location={l.id}>{u.bookHere}</button>
+                      <a href={l.yandex} target="_blank" rel="noopener">{u.yandex}</a>
+                      <a href={l.gis} target="_blank" rel="noopener">{u.gis}</a>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            {hasMap && <div class="map" id="map"><p class="map-ph">{u.mapPh}</p></div>}
+          </div>
+        </section>
+      )}
+
+      <section class="sec contacts" id="contacts">
+        <header class="sh"><h2 class="rv">{u.contactsTitle}</h2></header>
+        <ul class="ct">
+          <li class="rv"><span>{u.phone}</span><a href={tel}>{c.phoneDisplay}</a><button type="button" data-copy={c.phoneTel} aria-label={`${u.copy}: ${u.phone}`} set:html={copyIcon} /></li>
+          <li class="rv"><span>Telegram</span><a href={tg} target="_blank" rel="noopener">@{c.telegram}</a><button type="button" data-copy={`@${c.telegram}`} aria-label={`${u.copy}: Telegram`} set:html={copyIcon} /></li>
+          <li class="rv"><span>WhatsApp</span><a href={wa} target="_blank" rel="noopener">{c.phoneDisplay}</a><button type="button" data-copy={c.phoneTel} aria-label={`${u.copy}: WhatsApp`} set:html={copyIcon} /></li>
+          {c.maxUrl && <li class="rv"><span>MAX</span><a href={c.maxUrl} target="_blank" rel="noopener">{u.profile}</a><button type="button" data-copy={c.maxUrl} aria-label={`${u.copy}: MAX`} set:html={copyIcon} /></li>}
+        </ul>
+        <div class="ct-go rv"><button class="btn" type="button" data-book>{u.book}</button></div>
+      </section>
+
+      <section class="finale" id="finale">
+        <svg class="mark" viewBox="0 0 64 24" aria-hidden="true"><use href="#mark" /></svg>
+        <p class="fin rv" lang="tr">Sıhhatler olsun</p>
+        {u.finale && <p class="fin-tr rv">{u.finale}</p>}
+      </section>
+    </main>
+
+    <nav class="bar hide" id="bar" aria-label={u.quick}>
+      <button type="button" data-book class="bar-main">{u.book}</button>
+      <a href={tel}>{u.call}</a>
+      {hasLoc && <button type="button" data-route>{u.route}</button>}
+    </nav>
+
+    <dialog class="sheet" id="booking" aria-labelledby="bkTitle">
+      <form method="dialog" class="sheet-head">
+        <h2 id="bkTitle">{u.bkTitle}</h2>
+        <button class="x" aria-label={u.close}>×</button>
+      </form>
+      <p class="bk-sum" id="bkSum" aria-live="polite"></p>
+      <div class="bk-body" id="bkBody"></div>
+      <div class="bk-send">
+        <p class="bk-hint">{u.bkHint}</p>
+        <div class="bk-btns" id="bkBtns"></div>
+        <a class="bk-call" href={tel}>{u.bkCall}: {c.phoneDisplay}</a>
+      </div>
+    </dialog>
+
+    {hasLoc && (
+      <dialog class="sheet" id="routes" aria-labelledby="rtTitle">
+        <form method="dialog" class="sheet-head"><h2 id="rtTitle">{u.rtTitle}</h2><button class="x" aria-label={u.close}>×</button></form>
+        <ul class="rt-list">
+          {locs.map((l: any) => (
+            <li><b>{l.title}</b><span>{l.sub}</span><div><a href={l.yandex} target="_blank" rel="noopener">{u.yandex}</a><a href={l.gis} target="_blank" rel="noopener">{u.gis}</a></div></li>
+          ))}
+        </ul>
+      </dialog>
+    )}
+
+    <dialog class="lb" id="lb" aria-label={u.lbLabel}>
+      <form method="dialog"><button class="x" aria-label={u.close}>×</button></form>
+      <ul class="lb-track" id="lbTrack">
+        {cfg.gallery.map((g: any) => <li set:html={g.video ? vid(g.video, t(g.alt)) : pic(g.id, '100vw', t(g.alt))} />)}
+      </ul>
+      <p class="lb-n" id="lbN" aria-live="polite"></p>
+    </dialog>
+
+    <p class="toast" id="toast" role="status" aria-live="polite"></p>
+    <script type="application/json" id="cfg" set:html={JSON.stringify(clientCfg)} />
+    <script>
+      import '../scripts/main.js';
+      import { initBooking } from '../scripts/booking.js';
+      initBooking(JSON.parse(document.getElementById('cfg').textContent));
+    </script>
+  </body>
+</html>

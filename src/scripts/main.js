@@ -56,23 +56,6 @@ if ('IntersectionObserver' in window) {
    Каждой сцене [data-scene] ставится --p от 0 до 1: сколько её уже пролистано.
    Что именно движется, описано в CSS (масштаб, сдвиг, затемнение). */
 const scenes = [...document.querySelectorAll('[data-scene]')].map((el) => ({ el, on: false }));
-const rail = document.querySelector('[data-rail]');
-const railList = $('rail');
-let railMax = 0;
-
-function measureRail() {
-  if (!rail) return;
-  if (calm || !desktop.matches) {
-    rail.style.height = '';
-    railList.style.transform = '';
-    railMax = 0;
-    return;
-  }
-  railMax = Math.max(0, railList.scrollWidth - rail.clientWidth);
-  // высота сцены = экран + столько, сколько нужно проехать вбок
-  rail.style.height = railMax ? `${innerHeight + railMax}px` : '';
-}
-
 let queued = false;
 function paint() {
   queued = false;
@@ -82,11 +65,6 @@ function paint() {
     const span = r.height - innerHeight;
     const p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
     s.el.style.setProperty('--p', p.toFixed(4));
-  }
-  if (railMax) {
-    const r = rail.getBoundingClientRect();
-    const p = Math.min(1, Math.max(0, -r.top / (r.height - innerHeight)));
-    railList.style.transform = `translate3d(${(-p * railMax).toFixed(1)}px,0,0)`;
   }
 }
 if (!calm) {
@@ -105,55 +83,43 @@ if (!calm) {
     requestAnimationFrame(paint);
   };
   addEventListener('scroll', ask, { passive: true });
-  addEventListener('resize', () => {
-    measureRail();
-    ask();
-  });
-  addEventListener('load', () => {
-    measureRail();
-    ask();
-  });
-  measureRail();
+  addEventListener('resize', ask);
+  addEventListener('load', ask);
   paint();
 }
 
-/* ---------- галерея: фильтр и просмотр на весь экран ---------- */
+/* ---------- меню в левом верхнем углу ---------- */
+(function nav() {
+  const nav = $('nav');
+  const btn = $('navBtn');
+  if (!nav || !btn) return;
+  const set = (open) => {
+    nav.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', String(open));
+  };
+  btn.addEventListener('click', () => set(!nav.classList.contains('open')));
+  nav.addEventListener('click', (e) => e.target.closest('a') && set(false));
+  document.addEventListener('click', (e) => !nav.contains(e.target) && set(false));
+  addEventListener('keydown', (e) => e.key === 'Escape' && set(false));
+})();
+
+/* ---------- работы: сетка и просмотр на весь экран ---------- */
 (function gallery() {
+  const grid = $('grid');
   const lb = $('lb');
   const track = $('lbTrack');
   const counter = $('lbN');
-  if (!railList || !lb) return;
-  let filter = document.querySelector('.chip[aria-pressed=true]')?.dataset.filter;
-  const shots = [...railList.children];
-  const slides = [...track.children];
-  const visible = () => slides.filter((s) => !s.hidden);
-
-  document.querySelectorAll('.chip').forEach((chip) =>
-    chip.addEventListener('click', () => {
-      filter = chip.dataset.filter;
-      document.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
-      shots.forEach((s, i) => {
-        const hide = s.dataset.type !== filter;
-        s.hidden = hide;
-        slides[i].hidden = hide;
-      });
-      railList.scrollTo({ left: 0 });
-      measureRail();
-      paint();
-    }),
-  );
-
+  if (!grid || !lb) return;
+  const total = track.children.length;
   const count = () => {
-    const list = visible();
     const i = Math.round(track.scrollLeft / track.clientWidth);
-    counter.textContent = `${Math.min(list.length, i + 1)} / ${list.length}`;
+    counter.textContent = `${Math.min(total, i + 1)} / ${total}`;
   };
-  railList.addEventListener('click', (e) => {
+  grid.addEventListener('click', (e) => {
     const b = e.target.closest('[data-open]');
     if (!b) return;
     lb.showModal();
-    const i = visible().indexOf(slides[Number(b.dataset.open)]);
-    track.scrollTo({ left: i * track.clientWidth, behavior: 'instant' });
+    track.scrollTo({ left: Number(b.dataset.open) * track.clientWidth, behavior: 'instant' });
     count();
   });
   track.addEventListener('scroll', count, { passive: true });
@@ -171,12 +137,12 @@ if (!calm) {
   const bar = $('bar');
   if (!bar) return;
   let q = false;
-  let seat = false; // кнопка записи на сиденье кресла в кадре
+  let seat = false; // кнопка записи в блоке контактов в кадре
   const sync = () => {
     q = false;
     bar.classList.toggle('hide', seat || scrollY < innerHeight * 0.6);
   };
-  const seatBtn = document.querySelector('.ch-seat .btn');
+  const seatBtn = document.querySelector('.ct-go .btn');
   if (seatBtn && 'IntersectionObserver' in window) {
     new IntersectionObserver((es) => {
       seat = es[0].isIntersecting;
@@ -193,6 +159,7 @@ if (!calm) {
 
 /* ---------- кнопки «скопировать» ---------- */
 const toast = $('toast');
+const ui = JSON.parse($('cfg').textContent).ui;
 const say = (text) => {
   toast.textContent = text;
   toast.classList.add('on');
@@ -204,9 +171,9 @@ document.addEventListener('click', async (e) => {
   if (!b) return;
   try {
     await navigator.clipboard.writeText(b.dataset.copy);
-    say('Скопировано');
+    say(ui.copied);
   } catch {
-    say('Не получилось скопировать, выделите текст вручную');
+    say(ui.copyFail);
   }
 });
 
@@ -232,13 +199,13 @@ routes?.addEventListener('click', (e) => {
       io.disconnect();
       const s = document.createElement('script');
       s.src = `https://api-maps.yandex.ru/2.1/?lang=ru_RU${cfg.mapsKey ? `&apikey=${cfg.mapsKey}` : ''}`;
-      s.onerror = () => (box.querySelector('.map-ph').textContent = 'Карта не загрузилась. Адреса и маршруты есть в карточках.');
+      s.onerror = () => (box.querySelector('.map-ph').textContent = cfg.ui.mapFail);
       s.onload = () =>
         window.ymaps.ready(() => {
           box.textContent = '';
           const m = new window.ymaps.Map(box, { center: cfg.locations[0].coords, zoom: 11, controls: ['zoomControl'] });
           cfg.locations.forEach((l) => {
-            const mark = new window.ymaps.Placemark(l.coords, { hintContent: `м. ${l.metro}` }, { preset: 'islands#blackDotIcon' });
+            const mark = new window.ymaps.Placemark(l.coords, { hintContent: l.title }, { preset: 'islands#blackDotIcon' });
             mark.events.add('click', () => pick(l.id));
             m.geoObjects.add(mark);
           });

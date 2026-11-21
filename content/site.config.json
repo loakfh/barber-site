@@ -1,131 +1,142 @@
 {
-  "_readme": "Единственный файл с контактами, локациями, услугами, текстами и отзывами. Чего нет в исходниках, помечено [TODO] и перечислено в CONTENT_TODO.md. Строки с \"draft\": true показываются с пометкой «черновик», пока не утверждены.",
+  "_readme": "Единственный файл с контактами, адресами, текстами и лентой работ. Тексты на двух языках: { \"ru\": \"…\", \"tr\": \"…\" }. Чего нет в исходниках, перечислено в CONTENT_TODO.md. Строки с \"draft\": true ждут подтверждения Тамера (пометку на сайте включает site.showDraftMarks).",
   "site": {
     "url": "https://loakfh.github.io",
-    "title": "Барбер Тамер Орджю в Москве: запись на стрижку",
-    "description": "Барбер Тамер Орджю в Москве: мужские стрижки, борода, бритьё опасной бритвой. Больше 30 лет в профессии. Запись в Telegram, WhatsApp и по телефону.",
+    "title": {
+      "ru": "Тамер Орджю, стилист в Москве: мужские стрижки, борода, женские укладки",
+      "tr": "Tamer Örcü, Moskova'da saç stilisti: erkek saç kesimi, sakal, kadın saç şekillendirme"
+    },
+    "description": {
+      "ru": "Стилист Тамер Орджю (Tamer Örcü) в Москве: мужские стрижки, борода, бритьё опасной бритвой, женские укладки и причёски. Больше 30 лет в профессии. Принимает на проспекте Мира, улице Миклухо-Маклая и Нижней Радищевской. Запись в Telegram, WhatsApp и по телефону.",
+      "tr": "Saç stilisti Tamer Örcü Moskova'da: erkek saç kesimi, sakal, geleneksel Türk tıraşı, kadın saç şekillendirme. 30 yılı aşkın meslek deneyimi. Prospekt Mira, Mikluho-Maklaya ve Nijnyaya Radişçevskaya adreslerinde. Randevu: Telegram, WhatsApp, telefon."
+    },
     "showDraftMarks": false
   },
   "person": {
     "nameLatin": "Tamer Örcü",
     "nameRu": "Тамер Орджю",
-    "jobTitle": "Барбер"
+    "jobTitle": { "ru": "Стилист", "tr": "Saç stilisti" }
   },
   "contacts": {
     "phoneDisplay": "+7 927 037-67-67",
     "phoneTel": "+79270376767",
     "telegram": "tamerorcu",
     "whatsapp": "79270376767",
-    "maxUrl": "",
-    "instagram": "barber_tamerorcu"
+    "maxUrl": ""
   },
-  "metrika": {
-    "counterId": null
-  },
+  "metrika": { "counterId": null },
   "yandexMapsApiKey": "",
-  "booking": {
-    "daysAhead": 14,
-    "stepMinutes": 30
-  },
+  "booking": { "daysAhead": 14, "stepMinutes": 30 },
   "hero": {
-    "kicker": "Барбер",
-    "city": "Москва"
+    "kicker": { "ru": "Стилист", "tr": "Saç stilisti" }
   },
   "cover": {
-    "line": "Понимаю с полуслова и делаю то, что хотите вы",
+    "line": {
+      "ru": "Понимаю с полуслова и делаю то, что хотите вы",
+      "tr": "Sizi yarım kelimeden anlar, sizin istediğinizi yaparım"
+    },
     "draft": true
   },
   "stats": [
-    {
-      "value": "30+",
-      "label": "лет в профессии"
-    },
-    {
-      "value": "18",
-      "label": "лет в России"
-    },
-    {
-      "value": "сотни",
-      "label": "довольных клиентов",
-      "draft": true
-    }
+    { "value": "30+", "label": { "ru": "лет в профессии", "tr": "yıl meslekte" } },
+    { "value": "18", "label": { "ru": "лет в России", "tr": "yıl Rusya'da" } },
+    { "value": { "ru": "сотни", "tr": "yüzlerce" }, "label": { "ru": "довольных клиентов", "tr": "memnun müşteri" }, "draft": true }
   ],
-  "galleryTypes": [
-    {
-      "id": "men",
-      "label": "Мужские"
+  "tape": {
+    "ru": ["Москва", "мужские стрижки", "борода", "бритьё опасной бритвой", "женские укладки и причёски"],
+    "tr": ["Moskova", "erkek saç kesimi", "sakal", "geleneksel Türk tıraşı", "kadın saç şekillendirme"]
+  },
+  "about": {
+    "photo": "p02",
+    "photoAlt": { "ru": "Тамер стрижёт клиента ножницами у рабочего места", "tr": "Tamer müşterinin saçını makasla kesiyor" },
+    "lead": {
+      "ru": "В профессии больше 30 лет. Начинал в 12 лет помощником парикмахера в Турции, потом окончил профильный колледж. Последние 18 лет работаю в России.",
+      "tr": "30 yılı aşkın süredir bu meslekteyim. 12 yaşında Türkiye'de kuaför yardımcısı olarak başladım, ardından kuaförlük meslek kolejini bitirdim. Son 18 yıldır Rusya'da çalışıyorum."
     },
-    {
-      "id": "women",
-      "label": "Женские"
-    }
-  ],
+    "text": [
+      {
+        "ru": "Моя основная специализация: мужские стрижки и работа с формой. Берусь за сложные волосы: густые, жёсткие, с непростым направлением роста. Форму подбираю под лицо, тип волос и образ жизни.",
+        "tr": "Asıl uzmanlığım erkek saç kesimi ve saça form vermek. Zor saçlarla çalışırım: kalın, yoğun, sert, çıkış yönü farklı saçlar. Formu yüz yapısına, saç tipine ve yaşam tarzına göre belirlerim."
+      },
+      {
+        "ru": "Делаю женские укладки и причёски. Я не колорист: женским окрашиванием не занимаюсь.",
+        "tr": "Kadın saç şekillendirme ve özel saç modelleri yaparım. Kolorist değilim: kadın saç boyama yapmıyorum."
+      },
+      {
+        "ru": "Говорю по-русски и по-турецки.",
+        "tr": "Türkçe ve Rusça konuşurum."
+      }
+    ],
+    "doTitle": { "ru": "Что делаю", "tr": "Neler yaparım" },
+    "do": [
+      { "ru": "Классические и современные мужские стрижки", "tr": "Klasik ve modern erkek saç kesimleri" },
+      { "ru": "Фейд, ножницы и машинка", "tr": "Fade, makas ve makine teknikleri" },
+      { "ru": "Борода", "tr": "Sakal şekillendirme" },
+      { "ru": "Традиционное турецкое бритьё и мужской уход", "tr": "Geleneksel Türk tıraşı ve erkek bakımı" },
+      { "ru": "Мужское тонирование и камуфляж седины", "tr": "Erkek saç tonlama ve beyaz saç kamuflajı" },
+      { "ru": "Женские укладки и причёски", "tr": "Kadın saç şekillendirme ve özel saç modelleri" }
+    ],
+    "pathTitle": { "ru": "Где работал", "tr": "Nerelerde çalıştım" },
+    "path": [
+      { "place": { "ru": "Турция", "tr": "Türkiye" }, "text": { "ru": "Салоны при отелях. Здесь получил профессию", "tr": "Otel bünyesindeki salonlar. Mesleği burada öğrendim" } },
+      { "place": { "ru": "Казань", "tr": "Kazan" }, "text": { "ru": "Салон DeVille. Здесь прошла большая часть моих 18 лет в России", "tr": "DeVille salonu. Rusya'daki 18 yılımın büyük bölümü burada geçti" } },
+      { "place": { "ru": "Анталья", "tr": "Antalya" }, "text": { "ru": "MIRAY Beauty: собственный салон, основатель и главный мастер", "tr": "MIRAY Beauty: kendi salonum, kurucu ve baş usta" } },
+      { "place": { "ru": "Казань", "tr": "Kazan" }, "text": { "ru": "Huseyin Kanat Beauty Salon в отеле Kazan Palace by TASIGO 5★", "tr": "Huseyin Kanat Beauty Salon, Kazan Palace by TASIGO 5★ oteli" } },
+      { "place": { "ru": "Москва", "tr": "Moskova" }, "text": { "ru": "Сейчас принимаю по трём адресам", "tr": "Şimdi üç adreste çalışıyorum" } }
+    ]
+  },
+  "fire": {
+    "video": "fire-2",
+    "videoAlt": { "ru": "Тамер проводит горящей палочкой у уха клиента", "tr": "Tamer yanan çubuğu müşterinin kulağının yanından geçiriyor" },
+    "question": { "ru": "Зачем ты поджигаешь уши?", "tr": "Kulakları neden ateşle yakıyorsun?" },
+    "answer": {
+      "ru": "Это традиционный турецкий приём. Огонь убирает пушок на ушах и скулах, который не берут ни машинка, ни бритва. Пламя касается только волосков, всё занимает пару секунд.",
+      "tr": "Bu geleneksel bir Türk berber usulü. Ateş, kulaklardaki ve elmacık kemiklerindeki ince tüyleri alır; onlara ne makine ne ustura ulaşır. Alev yalnızca tüylere değer, hepsi birkaç saniye sürer."
+    },
+    "draft": true
+  },
   "gallery": [
+    { "id": "m-pair", "wide": true, "alt": { "ru": "Мужская стрижка с боковым пробором и бородой: вид сбоку и сзади", "tr": "Yandan ayrık erkek saç kesimi ve sakal: yandan ve arkadan" } },
+    { "video": "clip-4", "alt": { "ru": "Короткая женская стрижка: укладка кудрей, видео", "tr": "Kısa kadın saç kesimi: bukle şekillendirme, video" } },
+    { "id": "w-bun", "alt": { "ru": "Низкий пучок на светлых волосах, вид сзади", "tr": "Sarı saçta alçak topuz, arkadan" } },
+    { "video": "cut-1", "alt": { "ru": "Короткая мужская стрижка с переходом и бородой, видео", "tr": "Geçişli kısa erkek saç kesimi ve sakal, video" } },
+    { "id": "m-boy", "alt": { "ru": "Стрижка с плавным переходом на висках, вид сбоку", "tr": "Şakaklarda yumuşak geçişli saç kesimi, yandan" } },
+    { "id": "p17", "alt": { "ru": "Тамер и Дмитрий Маликов стоят рядом в зале салона", "tr": "Tamer ve Dmitri Malikov salonda yan yana" }, "caption": { "ru": "С Дмитрием Маликовым", "tr": "Dmitri Malikov ile" } },
+    { "id": "w-waves", "alt": { "ru": "Крупные локоны на длинных тёмных волосах, вид сзади", "tr": "Uzun koyu saçta iri dalgalar, arkadan" } },
+    { "id": "p04", "alt": { "ru": "Короткая женская стрижка с объёмом, вид сбоку", "tr": "Hacimli kısa kadın saç kesimi, yandan" } },
+    { "video": "clip-2", "alt": { "ru": "Мужская стрижка с высоким переходом, вид со всех сторон, видео", "tr": "Yüksek geçişli erkek saç kesimi, her açıdan, video" } },
+    { "id": "w-mirror", "alt": { "ru": "Тамер заканчивает укладку, клиентка улыбается в круглом зеркале", "tr": "Tamer şekillendirmeyi bitiriyor, müşteri yuvarlak aynada gülümsüyor" } },
+    { "id": "m-curly", "alt": { "ru": "Стрижка на кудрявых волосах, вид сбоку", "tr": "Kıvırcık saçta kesim, yandan" } },
+    { "id": "w-pair", "alt": { "ru": "Локоны на длинных волосах: вид сбоку и сзади", "tr": "Uzun saçta bukleler: yandan ve arkadan" } },
+    { "id": "m-back", "alt": { "ru": "Мужская стрижка с переходом на затылке, вид сзади", "tr": "Ensede geçişli erkek saç kesimi, arkadan" } },
+    { "video": "clip-3", "alt": { "ru": "Короткая женская стрижка с текстурой, до и после, видео", "tr": "Dokulu kısa kadın saç kesimi, önce ve sonra, video" } },
+    { "id": "p05", "alt": { "ru": "Собранная причёска «ракушка», вид сзади и сбоку", "tr": "Toplu saç modeli, arkadan ve yandan" } },
+    { "id": "w-straight", "alt": { "ru": "Ровный срез на прямых волосах до лопаток, вид сзади", "tr": "Düz saçta küt kesim, arkadan" } },
+    { "id": "w-selfie", "alt": { "ru": "Укладка с объёмом на длинных тёмных волосах", "tr": "Uzun koyu saçta hacimli şekillendirme" } }
+  ],
+  "locations": [
     {
-      "id": "m-pair",
-      "type": "men",
-      "wide": true,
-      "alt": "Мужская стрижка с боковым пробором и бородой: вид сбоку и сзади"
+      "id": "mira",
+      "name": { "ru": "«Друзья и встречи»", "tr": "«Друзья и встречи» (Druzya i Vstreçi)" },
+      "address": { "ru": "проспект Мира, 7, стр. 3", "tr": "Prospekt Mira 7, bina 3" },
+      "floor": "",
+      "query": "Москва, проспект Мира, 7с3"
     },
     {
-      "video": "cut-1",
-      "type": "men",
-      "alt": "Короткая мужская стрижка с переходом и бородой, видео"
+      "id": "maklaya",
+      "name": { "ru": "«Бьюти парк»", "tr": "«Бьюти парк» (Beauty Park)" },
+      "address": { "ru": "улица Миклухо-Маклая, 37", "tr": "Mikluho-Maklaya Caddesi 37" },
+      "floor": { "ru": "3 этаж", "tr": "3. kat" },
+      "query": "Москва, улица Миклухо-Маклая, 37"
     },
     {
-      "id": "m-boy",
-      "type": "men",
-      "alt": "Стрижка с плавным переходом на висках, вид сбоку"
-    },
-    {
-      "id": "p17",
-      "type": "men",
-      "alt": "Тамер и Дмитрий Маликов стоят рядом в зале салона",
-      "caption": "С Дмитрием Маликовым"
-    },
-    {
-      "id": "m-curly",
-      "type": "men",
-      "alt": "Стрижка на кудрявых волосах, вид сбоку"
-    },
-    {
-      "id": "m-back",
-      "type": "men",
-      "alt": "Мужская стрижка с переходом на затылке, вид сзади"
-    },
-    {
-      "id": "w-pair",
-      "type": "women",
-      "wide": true,
-      "alt": "Локоны на длинных волосах: вид сбоку и сзади"
-    },
-    {
-      "id": "w-mirror",
-      "type": "women",
-      "alt": "Тамер заканчивает укладку, клиентка улыбается в круглом зеркале"
-    },
-    {
-      "id": "p04",
-      "type": "women",
-      "alt": "Короткая женская стрижка с объёмом, вид сбоку"
-    },
-    {
-      "id": "p05",
-      "type": "women",
-      "alt": "Собранная причёска «ракушка», вид сзади и сбоку"
-    },
-    {
-      "id": "w-straight",
-      "type": "women",
-      "alt": "Ровный срез на прямых волосах до лопаток, вид сзади"
-    },
-    {
-      "id": "w-selfie",
-      "type": "women",
-      "alt": "Укладка с объёмом на длинных тёмных волосах"
+      "id": "radish",
+      "name": "",
+      "address": { "ru": "Нижняя Радищевская улица, 5, стр. 1", "tr": "Nijnyaya Radişçevskaya Caddesi 5, bina 1" },
+      "floor": { "ru": "2 этаж", "tr": "2. kat" },
+      "query": "Москва, Нижняя Радищевская улица, 5с1"
     }
   ],
-  "locations": [],
   "reviews": [],
   "services": []
 }

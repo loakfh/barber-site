@@ -39,6 +39,16 @@
         1930
       ]
     },
+    "p02": {
+      "src": "p02.jpg",
+      "width": 955,
+      "height": 1280,
+      "widths": [
+        480,
+        800,
+        955
+      ]
+    },
     "p04": {
       "src": "p04.jpg",
       "width": 721,
@@ -66,6 +76,15 @@
         480,
         800,
         960
+      ]
+    },
+    "w-bun": {
+      "src": "w-bun.jpg",
+      "width": 720,
+      "height": 1280,
+      "widths": [
+        480,
+        720
       ]
     },
     "w-mirror": {
@@ -106,6 +125,15 @@
         780
       ]
     },
+    "w-waves": {
+      "src": "w-waves.jpg",
+      "width": 720,
+      "height": 1280,
+      "widths": [
+        480,
+        720
+      ]
+    },
     "hero-cutout": {
       "src": "hero-cutout.png",
       "width": 874,
@@ -117,6 +145,24 @@
     }
   },
   "video": {
+    "clip-2": {
+      "src": "clip-2.mp4",
+      "width": 720,
+      "height": 1280,
+      "duration": 11.5
+    },
+    "clip-3": {
+      "src": "clip-3.mp4",
+      "width": 720,
+      "height": 1280,
+      "duration": 9.8
+    },
+    "clip-4": {
+      "src": "clip-4.mp4",
+      "width": 720,
+      "height": 1280,
+      "duration": 12.4
+    },
     "cut-1": {
       "src": "cut-1.mp4",
       "width": 480,
@@ -128,6 +174,12 @@
       "width": 720,
       "height": 1280,
       "duration": 7.4
+    },
+    "fire-2": {
+      "src": "fire-2.mp4",
+      "width": 720,
+      "height": 1280,
+      "duration": 50.2
     }
   }
 }

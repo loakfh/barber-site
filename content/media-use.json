@@ -1,19 +1,4 @@
 {
-  "photos": [
-    "m-pair",
-    "m-boy",
-    "p17",
-    "m-curly",
-    "m-back",
-    "w-pair",
-    "w-mirror",
-    "p04",
-    "p05",
-    "w-straight",
-    "w-selfie"
-  ],
-  "video": [
-    "fire-1",
-    "cut-1"
-  ]
+  "photos": ["m-pair","m-boy","p17","m-curly","m-back","w-pair","w-mirror","p04","p05","w-straight","w-selfie","w-bun","w-waves","p02"],
+  "video": ["fire-1","fire-2","cut-1","clip-2","clip-3","clip-4"]
 }

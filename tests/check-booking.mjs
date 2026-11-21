@@ -8,7 +8,9 @@ import { extname, join } from 'node:path';
 const ROOT = 'dist-test';
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.avif': 'image/avif', '.woff2': 'font/woff2', '.mp4': 'video/mp4', '.webm': 'video/webm' };
 const server = createServer((req, res) => {
-  let p = join(ROOT, decodeURIComponent(req.url.split('?')[0]));
+  // /prod/… отдаёт боевую сборку, остальное — тестовую
+  const path = decodeURIComponent(req.url.split('?')[0]);
+  let p = path.startsWith('/prod/') ? join('dist', path.slice(5)) : join(ROOT, path);
   if (p.endsWith('/')) p += 'index.html';
   if (!existsSync(p)) return res.writeHead(404).end();
   res.writeHead(200, { 'Content-Type': TYPES[extname(p)] || 'application/octet-stream' }).end(readFileSync(p));
@@ -75,15 +77,36 @@ await p.locator('#booking .x').click();
 await p.evaluate(() => scrollTo(0, document.body.scrollHeight));
 await p.waitForTimeout(400);
 const gap = await p.evaluate(() => document.querySelector('.fin-tr').getBoundingClientRect().bottom <= document.querySelector('.bar').getBoundingClientRect().top);
-await p.evaluate(() => document.querySelector('.ch-seat .btn').scrollIntoView({ block: 'center' }));
+await p.evaluate(() => document.querySelector('.ct-go .btn').scrollIntoView({ block: 'center' }));
 await p.waitForTimeout(500);
-ok(await p.locator('#bar').evaluate((el) => el.classList.contains('hide')), 'у кресла нижняя панель скрыта: кнопка «Записаться» одна');
+ok(await p.locator('#bar').evaluate((el) => el.classList.contains('hide')), 'у контактов нижняя панель скрыта: кнопка «Записаться» одна');
 await p.evaluate(() => scrollTo(0, document.body.scrollHeight));
 await p.waitForTimeout(500);
 ok(gap, 'нижняя панель не перекрывает финал');
 await p.locator('[data-route]').click();
 ok((await p.locator('#routes a').count()) === 6, 'выбор маршрута: три локации, по две ссылки');
 await p.screenshot({ path: 'work/site/m-routes.png' });
+
+// 7a. боевая сборка: три адреса без графика, достаточно выбрать место
+const q = await ctx.newPage();
+await q.goto('http://localhost:4175/prod/');
+ok((await q.locator('.loc').count()) === 3, 'на боевой странице три адреса');
+ok((await q.locator('.tile').count()) >= 17 && (await q.locator('.chip').count()) === 0, 'работы одной смешанной сеткой, без переключателя');
+ok((await q.locator('a[href*="instagram"]').count()) === 0, 'ссылок на Instagram нет');
+await q.locator('.loc [data-book]').first().click();
+const prodText = decodeURIComponent((await q.locator('a.send[data-m="telegram"]').getAttribute('href')).split('?text=')[1]);
+console.log('     сообщение:', prodText);
+ok(prodText === 'Здравствуйте, Тамер! Хочу записаться: «Друзья и встречи», проспект Мира, 7, стр. 3.', 'адрес из карточки попадает в сообщение, время не требуется', prodText);
+await q.goto('http://localhost:4175/prod/tr/');
+ok((await q.locator('html').getAttribute('lang')) === 'tr' && (await q.locator('.lang a[aria-current]').textContent()) === 'TR', 'турецкая версия открывается, переключатель показывает TR');
+await q.locator('.hero [data-book]').click();
+await q.locator('.opt[data-kind="location"]').nth(1).click();
+const trText = decodeURIComponent((await q.locator('a.send[data-m="whatsapp"]').getAttribute('href')).split('?text=')[1]);
+console.log('     сообщение:', trText);
+ok(trText.startsWith('Merhaba Tamer! Randevu almak istiyorum: ') && trText.includes('37'), 'турецкое сообщение собирается', trText);
+const cyr = await q.evaluate(() => [...document.querySelectorAll('main h2, main h3, .nav a, .btn, .bar *')].map((e) => e.textContent).filter((x) => /[а-яё]/i.test(x) && !x.includes('«')));
+ok(cyr.length === 0, 'в турецкой версии заголовки и кнопки без русского текста', cyr.join(' | '));
+await q.close();
 
 // 8. запрещённые слова и тестовые данные в боевой сборке
 const prod = readFileSync('dist/index.html', 'utf8').replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, ' ');
