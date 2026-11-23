@@ -184,7 +184,8 @@ dialog::backdrop{background:#000000b3}
 .sheet-head h2{font:800 26px/1.1 var(--serif)}
 .x{width:44px;height:44px;font-size:30px;line-height:1;border-radius:50%}
 .bk-sum{padding:0 20px 12px;font-weight:600;font-size:17px;line-height:1.3;border-bottom:1px solid #15171b26}
-.bk-body{overflow-y:auto;overflow-x:clip;padding:14px 20px;flex:1;min-height:0}
+/* база auto, а не 0: иначе Safari на iPhone считает высоту панели без списка и сжимает его в полоску */
+.bk-body{overflow-y:auto;overflow-x:clip;padding:14px 20px;flex:0 1 auto;min-height:0}
 /* без min-width:0 fieldset растягивается по содержимому и лента дней не листается */
 .bk-body fieldset{margin-bottom:16px;min-width:0}
 .bk-body legend{font:800 22px/1.15 var(--serif);margin-bottom:12px;padding:0}
