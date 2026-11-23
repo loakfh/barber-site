@@ -3,11 +3,11 @@
   "site": {
     "url": "https://loakfh.github.io",
     "title": {
-      "ru": "Тамер Орджю, стилист в Москве: мужские стрижки, борода, женские укладки",
+      "ru": "Тамер Орджю, стилист в Москве: мужские и женские стрижки, борода, укладки",
       "tr": "Tamer Örcü, Moskova'da saç stilisti: erkek saç kesimi, sakal, kadın saç şekillendirme"
     },
     "description": {
-      "ru": "Стилист Тамер Орджю (Tamer Örcü) в Москве: мужские стрижки, борода, бритьё опасной бритвой, женские укладки и причёски. Больше 30 лет в профессии. Принимает на проспекте Мира, улице Миклухо-Маклая и Нижней Радищевской. Запись в Telegram, WhatsApp и по телефону.",
+      "ru": "Стилист Тамер Орджю (Tamer Örcü) в Москве: мужские стрижки, борода, бритьё опасной бритвой, женские стрижки, укладки и причёски. Больше 30 лет в профессии. Принимает на проспекте Мира, улице Миклухо-Маклая и Нижней Радищевской. Запись в Telegram, WhatsApp и по телефону.",
       "tr": "Saç stilisti Tamer Örcü Moskova'da: erkek saç kesimi, sakal, geleneksel Türk tıraşı, kadın saç şekillendirme. 30 yılı aşkın meslek deneyimi. Prospekt Mira, Mikluho-Maklaya ve Nijnyaya Radişçevskaya adreslerinde. Randevu: Telegram, WhatsApp, telefon."
     },
     "showDraftMarks": false
@@ -39,19 +39,19 @@
   },
   "stats": [
     { "value": "30+", "label": { "ru": "лет в профессии", "tr": "yıl meslekte" } },
-    { "value": "18", "label": { "ru": "лет в России", "tr": "yıl Rusya'da" } },
+    { "value": "19", "label": { "ru": "лет в России", "tr": "yıl Rusya'da" } },
     { "value": { "ru": "сотни", "tr": "yüzlerce" }, "label": { "ru": "довольных клиентов", "tr": "memnun müşteri" }, "draft": true }
   ],
   "tape": {
-    "ru": ["Москва", "мужские стрижки", "борода", "бритьё опасной бритвой", "женские укладки и причёски"],
-    "tr": ["Moskova", "erkek saç kesimi", "sakal", "geleneksel Türk tıraşı", "kadın saç şekillendirme"]
+    "ru": ["Москва", "мужские и женские стрижки", "борода", "бритьё опасной бритвой", "укладки и причёски"],
+    "tr": ["Moskova", "erkek ve kadın saç kesimi", "sakal", "geleneksel Türk tıraşı", "saç şekillendirme"]
   },
   "about": {
     "photo": "p02",
     "photoAlt": { "ru": "Тамер стрижёт клиента ножницами у рабочего места", "tr": "Tamer müşterinin saçını makasla kesiyor" },
     "lead": {
-      "ru": "В профессии больше 30 лет. Начинал в 12 лет помощником парикмахера в Турции, потом окончил профильный колледж. Последние 18 лет работаю в России.",
-      "tr": "30 yılı aşkın süredir bu meslekteyim. 12 yaşında Türkiye'de kuaför yardımcısı olarak başladım, ardından kuaförlük meslek kolejini bitirdim. Son 18 yıldır Rusya'da çalışıyorum."
+      "ru": "В профессии больше 30 лет. Начинал в 12 лет помощником парикмахера в Турции, потом окончил профильный колледж. Последние 19 лет работаю в России.",
+      "tr": "30 yılı aşkın süredir bu meslekteyim. 12 yaşında Türkiye'de kuaför yardımcısı olarak başladım, ardından kuaförlük meslek kolejini bitirdim. Son 19 yıldır Rusya'da çalışıyorum."
     },
     "text": [
       {
@@ -59,8 +59,8 @@
         "tr": "Asıl uzmanlığım erkek saç kesimi ve saça form vermek. Zor saçlarla çalışırım: kalın, yoğun, sert, çıkış yönü farklı saçlar. Formu yüz yapısına, saç tipine ve yaşam tarzına göre belirlerim."
       },
       {
-        "ru": "Делаю женские укладки и причёски. Я не колорист: женским окрашиванием не занимаюсь.",
-        "tr": "Kadın saç şekillendirme ve özel saç modelleri yaparım. Kolorist değilim: kadın saç boyama yapmıyorum."
+        "ru": "С женскими волосами работаю так же, как с мужскими: делаю сложные стрижки, короткие и удлинённые, с красивой формой. Вечерние и коктейльные укладки, локоны, причёски. Окрашиваю в один тон; за сложное окрашивание лучше обратиться к колористу.",
+        "tr": "Kadın saçıyla da erkek saçı kadar özenle çalışırım: zor kesimler, kısa ve uzun kesimler, güzel bir form. Gece ve kokteyl saçı, bukleler, özel saç modelleri. Tek ton boya yaparım; karmaşık renklendirme için bir koloriste gitmenizi öneririm."
       },
       {
         "ru": "Говорю по-русски и по-турецки.",
@@ -74,12 +74,14 @@
       { "ru": "Борода", "tr": "Sakal şekillendirme" },
       { "ru": "Традиционное турецкое бритьё и мужской уход", "tr": "Geleneksel Türk tıraşı ve erkek bakımı" },
       { "ru": "Мужское тонирование и камуфляж седины", "tr": "Erkek saç tonlama ve beyaz saç kamuflajı" },
-      { "ru": "Женские укладки и причёски", "tr": "Kadın saç şekillendirme ve özel saç modelleri" }
+      { "ru": "Женские стрижки: короткие, удлинённые, сложные по форме", "tr": "Kadın saç kesimleri: kısa, uzun, zor formlar" },
+      { "ru": "Вечерние и коктейльные укладки, локоны, причёски", "tr": "Gece ve kokteyl saçı, bukleler, özel saç modelleri" },
+      { "ru": "Окрашивание в один тон", "tr": "Tek ton saç boyama" }
     ],
     "pathTitle": { "ru": "Где работал", "tr": "Nerelerde çalıştım" },
     "path": [
       { "place": { "ru": "Турция", "tr": "Türkiye" }, "text": { "ru": "Салоны при отелях. Здесь получил профессию", "tr": "Otel bünyesindeki salonlar. Mesleği burada öğrendim" } },
-      { "place": { "ru": "Казань", "tr": "Kazan" }, "text": { "ru": "Салон DeVille. Здесь прошла большая часть моих 18 лет в России", "tr": "DeVille salonu. Rusya'daki 18 yılımın büyük bölümü burada geçti" } },
+      { "place": { "ru": "Казань", "tr": "Kazan" }, "text": { "ru": "Салон DeVille. Здесь прошла большая часть моих 19 лет в России", "tr": "DeVille salonu. Rusya'daki 19 yılımın büyük bölümü burada geçti" } },
       { "place": { "ru": "Анталья", "tr": "Antalya" }, "text": { "ru": "MIRAY Beauty: собственный салон, основатель и главный мастер", "tr": "MIRAY Beauty: kendi salonum, kurucu ve baş usta" } },
       { "place": { "ru": "Казань", "tr": "Kazan" }, "text": { "ru": "Huseyin Kanat Beauty Salon в отеле Kazan Palace by TASIGO 5★", "tr": "Huseyin Kanat Beauty Salon, Kazan Palace by TASIGO 5★ oteli" } },
       { "place": { "ru": "Москва", "tr": "Moskova" }, "text": { "ru": "Сейчас принимаю по трём адресам", "tr": "Şimdi üç adreste çalışıyorum" } }
@@ -120,6 +122,8 @@
       "name": { "ru": "«Друзья и встречи»", "tr": "«Друзья и встречи» (Druzya i Vstreçi)" },
       "address": { "ru": "проспект Мира, 7, стр. 3", "tr": "Prospekt Mira 7, bina 3" },
       "floor": "",
+      "metro": { "ru": "Сухаревская", "tr": "Suharevskaya" },
+      "lines": ["#ef7e24"],
       "query": "Москва, проспект Мира, 7с3"
     },
     {
@@ -127,6 +131,8 @@
       "name": { "ru": "«Бьюти парк»", "tr": "«Бьюти парк» (Beauty Park)" },
       "address": { "ru": "улица Миклухо-Маклая, 37", "tr": "Mikluho-Maklaya Caddesi 37" },
       "floor": { "ru": "3 этаж", "tr": "3. kat" },
+      "metro": { "ru": "Беляево", "tr": "Belyayevo" },
+      "lines": ["#ef7e24"],
       "query": "Москва, улица Миклухо-Маклая, 37"
     },
     {
@@ -134,6 +140,8 @@
       "name": "",
       "address": { "ru": "Нижняя Радищевская улица, 5, стр. 1", "tr": "Nijnyaya Radişçevskaya Caddesi 5, bina 1" },
       "floor": { "ru": "2 этаж", "tr": "2. kat" },
+      "metro": { "ru": "Таганская", "tr": "Taganskaya" },
+      "lines": ["#8d5b2d", "#943f90"],
       "query": "Москва, Нижняя Радищевская улица, 5с1"
     }
   ],

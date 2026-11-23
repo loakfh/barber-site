@@ -59,12 +59,13 @@ const locs = cfg.locations.map((l: any) => {
     address,
     floor,
     metro,
+    lines: l.lines || [],
     hours: l.hours || null,
     coords: l.coords || null,
     howToGet: t(l.howToGet),
     // в панели записи: крупно то, по чему место узнают, мелко остальное
     title: metro || name || address,
-    sub: [metro || name ? address : '', floor].filter(Boolean).join(', '),
+    sub: [metro ? name : '', metro || name ? address : '', floor].filter(Boolean).join(', '),
     msg: [name || address, metro || (name ? address : '')].filter(Boolean).join(', '),
     yandex: l.coords ? `https://yandex.ru/maps/?rtext=~${l.coords[0]},${l.coords[1]}&rtt=auto` : `https://yandex.ru/maps/?text=${q}`,
     gis: l.coords ? `https://2gis.ru/routeSearch/rsType/car/to/${l.coords[1]},${l.coords[0]}` : `https://2gis.ru/moscow/search/${q}`,
@@ -95,7 +96,7 @@ const jsonLd = hasLoc
 // в браузер уходит только то, что нужно панели записи и карте
 const clientCfg = {
   lang,
-  contacts: { phoneTel: c.phoneTel, telegram: c.telegram, whatsapp: c.whatsapp, maxUrl: c.maxUrl },
+  contacts: { phoneDisplay: c.phoneDisplay, phoneTel: c.phoneTel, telegram: c.telegram, whatsapp: c.whatsapp, maxUrl: c.maxUrl },
   booking: cfg.booking,
   services: cfg.services.map((s: any) => ({ id: s.id, title: t(s.title) })),
   locations: locs.map((l: any) => ({ id: l.id, title: l.title, sub: l.sub, msg: l.msg, hours: l.hours, coords: l.coords })),
@@ -273,7 +274,7 @@ const navItems = [['works', u.nav.works], ['about', u.nav.about], ...(hasLoc ? [
                   <div class="loc-b">
                     {l.hours && <p class="loc-status" data-status={l.id}></p>}
                     <h3>{l.name || l.address}</h3>
-                    {l.metro && <p class="loc-metro">{l.metro}</p>}
+                    {l.metro && <p class="loc-metro">{l.lines.map((col: string) => <i style={`background:${col}`} aria-hidden="true" />)}{l.metro}</p>}
                     <p class="loc-addr">{[l.name ? l.address : '', l.floor].filter(Boolean).join(', ')}</p>
                     {l.hours && <p class="loc-hours">{hoursText(l)}</p>}
                     {l.howToGet && <p class="loc-how">{l.howToGet}</p>}
@@ -295,9 +296,11 @@ const navItems = [['works', u.nav.works], ['about', u.nav.about], ...(hasLoc ? [
         <header class="sh"><h2 class="rv">{u.contactsTitle}</h2></header>
         <ul class="ct">
           <li class="rv"><span>{u.phone}</span><a href={tel}>{c.phoneDisplay}</a><button type="button" data-copy={c.phoneTel} aria-label={`${u.copy}: ${u.phone}`} set:html={copyIcon} /></li>
+          <li class="rv ct-max"><span>MAX</span>{c.maxUrl
+            ? <a href={c.maxUrl} target="_blank" rel="noopener">{u.maxWrite}</a>
+            : <a href="https://max.ru/" target="_blank" rel="noopener" data-copy={c.phoneTel} data-say={u.maxFind}>{u.maxWrite}</a>}<button type="button" data-copy={c.maxUrl || c.phoneTel} aria-label={`${u.copy}: MAX`} set:html={copyIcon} /></li>
           <li class="rv"><span>Telegram</span><a href={tg} target="_blank" rel="noopener">@{c.telegram}</a><button type="button" data-copy={`@${c.telegram}`} aria-label={`${u.copy}: Telegram`} set:html={copyIcon} /></li>
           <li class="rv"><span>WhatsApp</span><a href={wa} target="_blank" rel="noopener">{c.phoneDisplay}</a><button type="button" data-copy={c.phoneTel} aria-label={`${u.copy}: WhatsApp`} set:html={copyIcon} /></li>
-          {c.maxUrl && <li class="rv"><span>MAX</span><a href={c.maxUrl} target="_blank" rel="noopener">{u.profile}</a><button type="button" data-copy={c.maxUrl} aria-label={`${u.copy}: MAX`} set:html={copyIcon} /></li>}
         </ul>
         <div class="ct-go rv"><button class="btn" type="button" data-book>{u.book}</button></div>
       </section>

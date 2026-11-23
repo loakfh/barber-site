@@ -140,6 +140,9 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .loc h3{font:800 28px/1.12 var(--serif);letter-spacing:-.01em}
 .loc p{font-size:18px;margin-top:6px}
 .loc-how{opacity:.75}
+.loc-metro{display:flex;align-items:center;gap:6px;font-weight:600}
+.loc-metro i{width:14px;height:14px;border-radius:50%;flex:none}
+.loc-metro i+i{margin-left:-2px}
 .loc-status{font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin:0 0 6px!important}
 .loc-status.on{color:var(--mauve);opacity:1;font-weight:600}
 .loc-act{display:flex;flex-wrap:wrap;gap:4px 20px;align-items:center;margin-top:16px}
@@ -180,27 +183,33 @@ dialog::backdrop{background:#000000b3}
 .sheet-head{display:flex;justify-content:space-between;align-items:center;padding:16px 16px 6px 20px}
 .sheet-head h2{font:800 26px/1.1 var(--serif)}
 .x{width:44px;height:44px;font-size:30px;line-height:1;border-radius:50%}
-.bk-sum{padding:0 20px 12px;font-weight:600;font-size:15px;border-bottom:1px solid #15171b26}
+.bk-sum{padding:0 20px 12px;font-weight:600;font-size:17px;line-height:1.3;border-bottom:1px solid #15171b26}
 .bk-body{overflow-y:auto;overflow-x:clip;padding:14px 20px;flex:1;min-height:0}
 /* без min-width:0 fieldset растягивается по содержимому и лента дней не листается */
 .bk-body fieldset{margin-bottom:16px;min-width:0}
-.bk-body legend{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin-bottom:8px;padding:0}
+.bk-body legend{font:800 22px/1.15 var(--serif);margin-bottom:12px;padding:0}
 .opts{display:flex;gap:8px}
 .opts.col{flex-direction:column}
 .opts.row{overflow-x:auto;margin:0 -20px;padding:0 20px 4px;scrollbar-width:none}
 .opts.row::-webkit-scrollbar{display:none}
 .opts.grid{display:grid;grid-template-columns:repeat(4,1fr)}
-.opt{min-height:46px;padding:8px 16px;border:1.5px solid #15171b40;border-radius:14px;font-size:15px;white-space:nowrap;text-align:left;transition:transform .14s;flex:none}
+.opt{min-height:50px;padding:8px 16px;border:1.5px solid #15171b73;border-radius:14px;font-size:16px;background:#fffdf9;white-space:nowrap;text-align:left;transition:transform .14s;flex:none}
 .opts.grid .opt{text-align:center;padding:8px 4px}
 .opt b,.opt small{display:block}
-.opt small{opacity:.65;font-size:13px;white-space:normal}
+.opt small{opacity:.75;font-size:15px;line-height:1.3;margin-top:3px;white-space:normal}
+/* места: крупные строки с кружком выбора, чтобы было видно, что на них нажимают */
+.opts.col{gap:10px}
+.opts.col .opt{position:relative;min-height:68px;padding:12px 16px 12px 52px;white-space:normal}
+.opts.col .opt b{font-size:19px}
+.opts.col .opt::before{content:'';position:absolute;left:16px;top:50%;width:22px;height:22px;margin-top:-11px;border-radius:50%;border:2px solid currentColor;box-sizing:border-box}
+.opts.col .opt.on::before{background:var(--flame);border-color:var(--flame);box-shadow:inset 0 0 0 4px var(--ink)}
 .opt.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .bk-empty{font-size:14px;white-space:normal}
 .bk-note{font-size:16px;line-height:1.4;margin-bottom:8px}
 .bk-send{padding:12px 20px calc(16px + env(safe-area-inset-bottom));border-top:1px solid #15171b26}
-.bk-hint{font-size:13px;opacity:.7;margin-bottom:10px}
+.bk-hint{font-size:15px;opacity:.7;margin-bottom:10px}
 .bk-btns{display:flex;gap:8px}
-.send{flex:1;min-height:52px;display:inline-flex;align-items:center;justify-content:center;border-radius:99px;background:var(--ink);color:var(--paper);font-weight:600;text-decoration:none;transition:transform .14s}
+.send{flex:1;min-height:56px;font-size:16px;display:inline-flex;align-items:center;justify-content:center;border-radius:99px;background:var(--ink);color:var(--paper);font-weight:600;text-decoration:none;transition:transform .14s}
 .send.last{background:var(--flame);color:#140a02}
 .send.off{opacity:.3}
 .bk-call{display:flex;min-height:44px;align-items:center;justify-content:center;font-size:14px;margin-top:6px;text-underline-offset:4px}

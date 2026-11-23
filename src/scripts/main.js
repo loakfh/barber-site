@@ -171,7 +171,7 @@ document.addEventListener('click', async (e) => {
   if (!b) return;
   try {
     await navigator.clipboard.writeText(b.dataset.copy);
-    say(ui.copied);
+    say(b.dataset.say || ui.copied);
   } catch {
     say(ui.copyFail);
   }

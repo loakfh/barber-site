@@ -13,15 +13,16 @@ const L = {
     tomorrow: 'завтра',
     hello: 'Здравствуйте, Тамер! Хочу записаться',
     pickAll: 'Выберите место, день и удобное время',
-    pickPlace: 'Выберите, куда вам удобнее прийти',
+    pickPlace: 'Нажмите на адрес, куда вам удобнее прийти',
     noPlace: 'Напишите Тамеру: он предложит место и время',
-    place: 'Место',
+    place: 'Куда вам удобнее прийти?',
     day: 'День',
     time: 'Удобное время',
     timeInChat: 'Удобный день и время напишите в чате: Тамер ответит, когда сможет принять.',
     noDays: 'В ближайшие две недели здесь нет приёма. Выберите другое место или напишите Тамеру.',
     service: 'Услуга, если уже выбрали',
     copiedMax: 'Сообщение скопировано, вставьте его в чат',
+    copiedMaxFind: 'Сообщение скопировано. Найдите Тамера в MAX по номеру',
     copied: 'Сообщение скопировано на случай, если не подставится',
     open: 'сейчас принимает',
     closed: 'сейчас не принимает',
@@ -34,15 +35,16 @@ const L = {
     tomorrow: 'yarın',
     hello: 'Merhaba Tamer! Randevu almak istiyorum',
     pickAll: 'Yer, gün ve uygun saati seçin',
-    pickPlace: 'Size hangi adres uygun, onu seçin',
+    pickPlace: 'Size uygun adrese dokunun',
     noPlace: "Tamer'e yazın: yer ve saat önerecek",
-    place: 'Yer',
+    place: 'Size hangi adres uygun?',
     day: 'Gün',
     time: 'Uygun saat',
     timeInChat: 'Uygun gün ve saati sohbette yazın: Tamer ne zaman kabul edebileceğini söyler.',
     noDays: "Önümüzdeki iki hafta burada kabul yok. Başka bir yer seçin ya da Tamer'e yazın.",
     service: 'Hizmet, seçtiyseniz',
     copiedMax: 'Mesaj kopyalandı, sohbete yapıştırın',
+    copiedMaxFind: "Mesaj kopyalandı. MAX'te Tamer'i şu numarayla bulun:",
     copied: 'Mesaj kopyalandı: sohbette görünmezse yapıştırın',
     open: 'şu an kabul ediyor',
     closed: 'şu an kabul etmiyor',
@@ -112,7 +114,7 @@ export function buildLink(messenger, text, contacts) {
   const q = encodeURIComponent(text);
   if (messenger === 'telegram') return `https://t.me/${contacts.telegram}?text=${q}`;
   if (messenger === 'whatsapp') return `https://wa.me/${contacts.whatsapp}?text=${q}`;
-  return contacts.maxUrl; // в MAX текст в личный чат подставить нельзя: только копируем
+  return contacts.maxUrl || 'https://max.ru/'; // в MAX текст в личный чат подставить нельзя: только копируем
 }
 
 const remember = {
@@ -143,7 +145,7 @@ export function initBooking(cfg) {
   const lang = cfg.lang || 'ru';
   const t = L[lang] || L.ru;
   const anyHours = cfg.locations.some((l) => l.hours);
-  const messengers = MESSENGERS.filter((m) => m.id !== 'max' || cfg.contacts.maxUrl);
+  const messengers = MESSENGERS; // MAX есть всегда: без ссылки на профиль клиент ищет Тамера по номеру
   const state = { service: null, location: null, day: null, time: null };
   let days = [];
 
@@ -226,7 +228,7 @@ export function initBooking(cfg) {
     const text = buildMessage(state, lang);
     remember.set(a.dataset.m);
     // текст копируется для всех трёх мессенджеров: если черновик не подставится, клиент вставит сам
-    const done = () => say(a.dataset.m === 'max' ? t.copiedMax : t.copied);
+    const done = () => say(a.dataset.m !== 'max' ? t.copied : cfg.contacts.maxUrl ? t.copiedMax : `${t.copiedMaxFind} ${cfg.contacts.phoneDisplay}`);
     if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(done, () => {});
     // переход по ссылке выполняет сам браузер (href уже собран)
   });

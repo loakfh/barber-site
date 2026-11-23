@@ -96,14 +96,16 @@ ok((await q.locator('a[href*="instagram"]').count()) === 0, 'ссылок на I
 await q.locator('.loc [data-book]').first().click();
 const prodText = decodeURIComponent((await q.locator('a.send[data-m="telegram"]').getAttribute('href')).split('?text=')[1]);
 console.log('     сообщение:', prodText);
-ok(prodText === 'Здравствуйте, Тамер! Хочу записаться: «Друзья и встречи», проспект Мира, 7, стр. 3.', 'адрес из карточки попадает в сообщение, время не требуется', prodText);
+ok(prodText === 'Здравствуйте, Тамер! Хочу записаться: «Друзья и встречи», м. Сухаревская.', 'место и метро из карточки попадают в сообщение, время не требуется', prodText);
+ok((await q.locator('a.send').count()) === 3 && (await q.locator('.ct-max a').count()) === 1, 'MAX есть в панели записи и в контактах');
+ok((await q.locator('.loc-metro i').count()) === 4, 'у адресов метро с цветом ветки');
 await q.goto('http://localhost:4175/prod/tr/');
 ok((await q.locator('html').getAttribute('lang')) === 'tr' && (await q.locator('.lang a[aria-current]').textContent()) === 'TR', 'турецкая версия открывается, переключатель показывает TR');
 await q.locator('.hero [data-book]').click();
 await q.locator('.opt[data-kind="location"]').nth(1).click();
 const trText = decodeURIComponent((await q.locator('a.send[data-m="whatsapp"]').getAttribute('href')).split('?text=')[1]);
 console.log('     сообщение:', trText);
-ok(trText.startsWith('Merhaba Tamer! Randevu almak istiyorum: ') && trText.includes('37'), 'турецкое сообщение собирается', trText);
+ok(trText.startsWith('Merhaba Tamer! Randevu almak istiyorum: ') && trText.includes('Belyayevo'), 'турецкое сообщение собирается', trText);
 const cyr = await q.evaluate(() => [...document.querySelectorAll('main h2, main h3, .nav a, .btn, .bar *')].map((e) => e.textContent).filter((x) => /[а-яё]/i.test(x) && !x.includes('«')));
 ok(cyr.length === 0, 'в турецкой версии заголовки и кнопки без русского текста', cyr.join(' | '));
 await q.close();
